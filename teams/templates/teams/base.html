@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+
+    <title>{% block tittle_block %}  {% endblock %}</title>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">Home page</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  
+      <ul class="nav navbar-nav">
+      {% if request.user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="">Exercises</a> 
+      </li>
+      {% endif %}
+    </ul>
+
+     <ul class="nav navbar-nav ml-auto">
+      {% if request.user.is_authenticated %}
+
+        <li class="nav-item">
+        <a class="nav-link" href=""> Zalogowano : {{ request.user }} {{ request.user.city }} </a> 
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'teams:logout' %}"> Wyloguj się </a> 
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'teams:login' %}"> Zaloguj się </a>  
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="{% url 'teams:sign_in' %}"> Zarejestruj się </a>
+      </li>
+      {% endif %}
+       <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:index' %}"> Admin </a>  
+      </li>
+    </ul>
+
+    
+  
+</nav>
+
+
+
+        {% block body_block %}
+        {% endblock %}
+</body>
+</html>

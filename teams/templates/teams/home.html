@@ -1,0 +1,24 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Welcome to WatchDog! {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="jumbotron">
+    {% if request.user.email %}
+        <p>jest email</p>
+    {% endif %}
+    <h1>Watch your dog with us!</h1>
+    <h3>Sing in  or log in and analise yours dog achievements.</h3>
+    <p>Each day, after the training, save your achivements here. It will allow your trainer to control the way you'are training your dog, help you out on what you could improve, maybe modify a bit your exercises. <br>
+    Hope you'll enjoy.</p> 
+</div>
+
+
+{% endblock %}
+
+
+
+

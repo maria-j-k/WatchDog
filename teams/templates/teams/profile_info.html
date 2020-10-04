@@ -1,0 +1,34 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Register{% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="jumbotron">
+         <h1>Please enter information about your team:</h1>
+         <h3>Your account has been successfuly created, but it won't be active as long as you don't provide full information about your team.</h3>
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        {{ user_form.as_p }}
+        {{ address_form.as_p }}
+        {{ dog_form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Send">
+    </form>
+</div>
+
+
+{% endblock %}
+
+
+
+
