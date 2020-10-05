@@ -22,13 +22,16 @@ class UserCreateForm(UserCreationForm):
 
 
 class UserForm(forms.ModelForm):
+    profile_pic = forms.ImageField(required=False)
+
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'profile_pic', )
+        fields = ('first_name', 'last_name', 'email', 'zip_code', 'country')
 
 
 class AddressForm(forms.ModelForm):
     country = CountryField(blank_label='(select country)')
+
     class Meta:
         model = User 
         fields = ('zip_code', 'country')
@@ -36,19 +39,10 @@ class AddressForm(forms.ModelForm):
 
 class DogForm(forms.ModelForm):
     country = CountryField(blank_label='(select country)')
+
     class Meta:
         model = Dog
         fields = ('dogs_name', 'dogs_birthday', 
-            'dogs_bread', 'dogs_pic', 'team_description')
+            'dogs_bread', 'team_description')
 
-
-# class RegistrationForm(forms.ModelForm):
-#     country = CountryField(blank_label='(select country)')
-#     password = forms.CharField(widget=forms.PasswordInput())
-
-#     class Meta:
-#         model = Team
-#         fields = ('first_name', 'last_name', 'email',
-#             'zip_code', 'country',  'dogs_name', 'dogs_birthday', 'dogs_bread', 
-#             'profile_pic', 'dogs_pic', 'team_description')
 

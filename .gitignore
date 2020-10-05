@@ -220,6 +220,7 @@ env/*
 venv/*
 .idea/*
 notes.txt
+teams/notes*
 
 
 

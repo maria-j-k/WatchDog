@@ -1,0 +1,32 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Edit your profile {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+         <h1>Please update information about you and your dog:</h1>
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        {{ form.as_p }}
+        {{ dog_form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Confirm">
+    </form>
+</div>
+
+
+{% endblock %}
+
+
+
+

@@ -4,10 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, UpdateView
 
 from .custom_mixins import FullProfileOnlyMixin, SameUserOnlyMixin
 from .forms import AddressForm, DogForm, LoginForm, UserCreateForm, UserForm
@@ -22,7 +22,6 @@ class HomeView(TemplateView):
 
 class LoginUserView(LoginView):
     template_name = 'teams/login.html'
-    # success_url = reverse_lazy('teams:team_detail')
 
     def get_success_url(self):
         url = self.get_redirect_url()
@@ -33,6 +32,10 @@ class LoginUserView(LoginView):
 
 class LogoutUserView(LogoutView):
     next_page = reverse_lazy('teams:home')
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
 
 
 class SingInView(View):
@@ -48,51 +51,39 @@ class SingInView(View):
                 request,
                 'Account created, but inactive. Please login and complete your profile to activate your account.')
             return redirect('teams:login')
-
-        print(form.errors)
         return render(request, 'teams/sign_in.html', {'form': form})
 
 
 class ProfileInfoView(View):
     def get(self, request, *args, **kwargs):
         user_form = UserForm()
-        address_form = AddressForm()
         dog_form = DogForm()
         context = {
             'user_form': user_form,
-            'address_form': address_form,
             'dog_form': dog_form,
         }
         return render(request, 'teams/profile_info.html', context)
 
     def post(self, request, *args, **kwargs):
         user_form = UserForm(request.POST)
-        address_form = AddressForm(request.POST)
         dog_form = DogForm(request.POST)
-        if user_form.is_valid() and address_form.is_valid() and dog_form.is_valid():
+        if user_form.is_valid() and dog_form.is_valid():  
             user = request.user
             user.first_name = user_form.cleaned_data['first_name']
             user.last_name = user_form.cleaned_data['last_name']
             user.email = user_form.cleaned_data['email']
-            user.country = address_form.cleaned_data['country']
-            user.zip_code = address_form.cleaned_data['zip_code']
-            user.save()
+            user.country = user_form.cleaned_data['country']
+            user.zip_code = user_form.cleaned_data['zip_code']
             dog_data = dog_form.cleaned_data
             dog = Dog.objects.create(user=user, **dog_data)
-            if 'profile_pic' in request.FILES:
-                user.profile_pic = request.FILES['profile_pic']
-            if 'dogs_pic' in request.FILES:
-                dog.dogs_pic = request.FILES['dogs_pic']
-            dog.save()
-            user.has_full_profile = True
-            user.save()
+            # user.has_full_profile = True
+            # user.save()
             return redirect(reverse('teams:team_detail', kwargs={'pk': user.pk}))
             
 
         print(user_form.errors)
-        print(address_form.errors)
         print(dog_form.errors)
-        return redirect('teams:login')
+        return render(request, 'teams/profile_info.html', context)
 
 
 class TeamView(SameUserOnlyMixin, FullProfileOnlyMixin, DetailView):
@@ -100,15 +91,34 @@ class TeamView(SameUserOnlyMixin, FullProfileOnlyMixin, DetailView):
     context_object_name = 'user'
     template_name = 'teams/team_detail.html'
 
-    # def get_object(self, queryset=None):
-    #     obj = super(TeamView, self).get_object(queryset=Team.objects.get(user=self.request.user))
-    #     return obj
 
+class EditProfileView(FullProfileOnlyMixin, SameUserOnlyMixin, UpdateView):
+    model = User
+    form_class = UserForm
+    second_model = Dog
+    second_form_class = DogForm
+    template_name = 'teams/team_edit.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super(EditProfileView, self).get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            dog_form = self.second_form_class(self.request.POST, prefix='dog')
+        else:
+            dog_object = self.second_model.objects.get(user=self.get_object())
+            dog_form = self.second_form_class(instance=dog_object, prefix='dog')
+        context['dog_form'] = dog_form
+        return context     
+    
+    def post(self, request, *args, **kwargs):
+        response = super(EditProfileView, self).post(request, *args, **kwargs)
+        dog_form = self.second_form_class(self.request.POST,  prefix='dog')
+        if dog_form.is_valid():
+            user = self.get_object()
+            self.second_model.objects.filter(user=user).update(**dog_form.cleaned_data)
+            return response
+        return render(request, self.template_name, {
+            'form': self.get_form(self.get_form_class()),
+            'dog_form': dog_form
+        })
 
-# class PhotoDetail(DetailView):
-
-#     def get_object(self, queryset=None):
-#         obj = super(PhotoDetail, self).get_object(queryset=queryset)
-#         if obj.user != obj.photoextended.user:
-#             raise Http404()
-#         return obj
+    
