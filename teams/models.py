@@ -11,13 +11,13 @@ from django_countries.fields import CountryField
 # Create your models here.
 class User(AbstractUser):
 
-    def user_directory_path(instance, filename):
-        return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
+    # def user_directory_path(instance, filename):
+    #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
     # profile_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
     zip_code = models.CharField(max_length=10)
     country = CountryField()
-    # _has_full_profile = models.BooleanField(default=False)
+    _has_full_profile = models.BooleanField(null=True)
     
 
     def get_absolute_url(self):      

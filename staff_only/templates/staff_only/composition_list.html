@@ -1,0 +1,39 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Exercises {% endblock %}
+{% block body_block %}
+<div class="container">
+  
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Instruction</th>
+            <th>Fields</th>
+            <th>Clients</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in composition_list %}
+        <tr>
+            <td><a href= "{% url 'staff_only:composition_detail' item.pk %}" >{{ item.name }}</a></td>
+            <td>{{ item.instruction }}</td>
+            <td>{{ item.field_set }}</td>
+            <td>{% for u in item.ascription_set.all %} 
+                {% if u.active  %}
+            <a href="{% url 'staff_only:client_ascriptions' u.user.pk %}">{{ u.user }} </a>
+                {% endif %}
+            
+        {% endfor %}</td>
+            <td><a href="{% url 'staff_only:composition_delete' item.pk %}">X</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+
+{% endblock %}

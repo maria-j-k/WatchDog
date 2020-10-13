@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_countries',
     'teams',
+    'training',
+    'staff_only',
 ]
 
 MIDDLEWARE = [
@@ -130,5 +132,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 LOGOUT_REDIRECT_URl = '/teams/home/'
+LOGIN_URL = '/teams/login/'
 MEDIA_ROOT  = MEDIA_DIR
 MEDIA_URL = '/media/'

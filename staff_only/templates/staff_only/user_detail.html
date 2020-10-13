@@ -1,0 +1,36 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Clients {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+
+<div class="jumbotron">
+    {% include 'teams/team_detail_content.html' %}
+<button type="button" class="btn btn-secondary"><a style="color:white" href="">Suspend client</a></button>
+<button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'staff_only:client_ascriptions' user.pk %}">Manage client's exercises</a></button>
+
+</div>
+
+     
+
+    {% for ascr in user.ascription_set.all %}
+        {% include 'training/exercises_per_client.html' %}  
+    {% endfor %}
+    
+
+
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+

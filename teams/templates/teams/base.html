@@ -11,16 +11,42 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{% url 'teams:home' %}">Home page</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  
-      <ul class="nav navbar-nav">
-      {% if request.user.is_authenticated %}
-      <li class="nav-item">
-        <a class="nav-link" href="">Exercises</a> 
+  <nav class="navbar navbar-light bg-light">
+  <span class="navbar-brand mb-0 h1">Watch Dog</span>
+</nav>
+<div class="collapse navbar-collapse" id="navbarNavDropdown">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
       </li>
+      {% if request.user.is_staff %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         Clients
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'staff_only:clients' %}">Clients List</a>
+          <a class="dropdown-item" href="#">Registated users</a>
+        </div>
+      </li>
+      {% endif%}
+      {% if request.user.is_staff %}
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         Exercises
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="{% url 'staff_only:compositions' %}">See your exerecises</a>
+          <a class="dropdown-item" href="{% url 'staff_only:composition_add' %}">New exerecise</a>
+          <a class="dropdown-item" href="{% url 'staff_only:ascription_add' %}">Ascribe to clients</a>
+        </div>
+      </li>
+      {% endif %}
+  
+      {% if not  request.user.is_staff and request.user.is_authenticated %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'training:exercises' pk=request.user.pk %}">Your Exercises</a> 
+      </li> 
       {% endif %}
     </ul>
 
@@ -28,7 +54,7 @@
       {% if request.user.is_authenticated %}
 
         <li class="nav-item">
-        <a class="nav-link" href="{% url 'teams:team_detail' pk=request.user.pk %}"> Welcome {{ request.user.first_name }}</a> 
+        <a class="nav-link" href="{% url 'teams:team_detail' pk=request.user.pk %}"> Welcome {{ request.user }}</a> 
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'teams:logout' %}"> Logout </a> 
@@ -41,9 +67,11 @@
         <a class="nav-link" href="{% url 'teams:sign_in' %}"> Sign in </a>
       </li>
       {% endif %}
-       <li class="nav-item">
+      {% if request.user.is_superuser %}
+      <li class="nav-item">
         <a class="nav-link" href="{% url 'admin:index' %}"> Admin </a>  
       </li>
+      {% endif %}
     </ul>
 
     
@@ -54,5 +82,8 @@
 
         {% block body_block %}
         {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 </body>
 </html>

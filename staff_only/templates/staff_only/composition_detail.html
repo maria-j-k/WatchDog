@@ -1,0 +1,36 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Exercise detail {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+     
+    <h1>{{ composition.name }}</h1>
+    <h3>{{ composition.instruction }}</h3>
+    <h5> Fields: {{ composition.field_set }}</h5>
+    {% if composition.ascription_set.all.count != 0 %}
+    <h5>Ascribed to: </h5>
+    <ul> 
+        {% for client in composition.ascription_set.all %}
+            {% if client.active %}
+            <li>{{ client.user.username }}: {{client.user.pk }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+<button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'staff_only:composition_edit' composition.pk %}">Edit exercise</a></button>
+<button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'staff_only:manage_ascriptions' composition.pk %}">Edit ascriptions</a></button>
+<button type="button" class="btn btn-danger"><a style="color:white" href="{% url 'staff_only:composition_delete' composition.pk %}">Delete exercise</a></button>
+<button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'staff_only:compositions' %}">Exercises list</a></button>
+
+</div>
+
+{% endblock %}
+
+
+
+

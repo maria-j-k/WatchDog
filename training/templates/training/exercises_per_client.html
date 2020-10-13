@@ -1,0 +1,47 @@
+
+     <table class="table">
+         <thead class="thead-dark">
+             <tr>
+                 <th>{{ ascr.composition.name }}</th>
+                 {% if request.user == ascr.user %}
+                 <th><a href="">See details {{ascr.pk}} </a></th>
+                 <th><a href="{% url 'training:exercise_add' pk=ascr.pk %}">Add exercise</a></th>
+                  {% endif %}
+                  {% if request.user.is_staff %}
+                  <th><a href="{% url 'staff_only:composition_detail' pk=ascr.composition.pk %}">See details  </a></th>
+                    <th><a href="">Delete ascription to user</a></th>  
+                  {% endif %}
+             </tr>
+        </thead>
+     </table>
+     {% if  ascr.exercise_set.all %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Rating</th>
+                <th>Remarques</th>
+                <th>See detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ascr.exercise_set.all %}
+                <tr>
+                    <td>{{ item.date }}</td>
+                    <td>{{ item.time }}</td>
+                    <td>{{ item.rating }}</td>
+                    <td>{{ item.remarques }}</td>
+                    <td><a href="">{{ item.pk }}</a></td>
+                </tr>
+                
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% else %}
+         <p>You don't have any {{ ascr.composition.name }} exercise registered!! Are you training with your dog? Please, register regulary your trainings.</p>
+     {% endif %}
+   
+         

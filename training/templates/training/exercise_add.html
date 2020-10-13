@@ -1,0 +1,44 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Add exercise {% endblock %}
+
+
+{% block body_block %}
+
+{% if composition %}
+    <p>{{ composition.name }}</p>
+    <p>{{ composition.instruction }}</p>
+    <p>{{ composition.field_set }}</p>
+{% endif %}
+
+    <div class="container">
+     
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        {{ form.as_p }}
+        {{ place_form.as_p }}
+        {{ itinerary_form.as_p }}
+        {{ duration_form.as_p }}
+        {{ repetitions_form.as_p }}
+        {{ flavor_form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Send">
+    </form>
+
+
+</div>
+
+
+
+
+{% endblock %}
+
+
+
+

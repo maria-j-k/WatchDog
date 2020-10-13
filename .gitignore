@@ -221,6 +221,8 @@ venv/*
 .idea/*
 notes.txt
 teams/notes*
+exercises/notes*
+*notes.txt
 
 
 

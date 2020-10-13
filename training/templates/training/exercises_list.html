@@ -1,0 +1,80 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Home page {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+<h1>Name: {{ ascription.composition }}</h1>
+<h3>{{ ascription.composition.instruction }}</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+            {% if 'place' in ascription.composition.field_set %}
+                <th>Place</th>
+            {% endif %}
+            {% if 'place description' in ascription.composition.field_set %}
+                <th>Place description</th>
+            {% endif %}
+            {% if 'duration' in ascription.composition.field_set %}
+                <th>Duration</th>
+            {% endif %}
+            {% if 'repetitions' in ascription.composition.field_set %}
+                <th>Number of repetitions</th>
+            {% endif %}
+            {% if 'flavor' in ascription.composition.field_set %}
+                <th>Flavor</th>
+            {% endif %}
+            <th>Rating</th>
+            <th>Remarques</th>
+            {% if 'comment' in ascription.composition.field_set %}
+                <th>Trainer's comment</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for exr in ascription.exercise_set.all %}
+            <tr>
+                <td>{{ exr.date }}</td>
+                <td>{{ exr.time }}</td>
+                {% if 'place' in ascription.composition.field_set %}
+                <td>{{ exr.place }}</td>
+            {% endif %}
+            {% if 'place description' in ascription.composition.field_set %}
+                <td>{{ exr.place_description }}</td>
+            {% endif %}
+            {% if 'duration' in ascription.composition.field_set %}
+                <td>{{ exr.duration }}</td>
+            {% endif %}
+            {% if 'repetitions' in ascription.composition.field_set %}
+                <td>{{ exr.repetitions }}</td>
+            {% endif %}
+            {% if 'flavor' in ascription.composition.field_set %}
+                <td>{{ exr.flavor }}</td>
+            {% endif %}
+                <td>{{ exr.rating }}</td>
+                <td>{{ exr.remarques }}</td>
+            {% if 'comment' in ascription.composition.field_set %}
+                <td>{{ exr.comment }}</td>
+            {% endif %}
+            </tr>
+        {% endfor %}
+       
+    </tbody>
+</table>
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+

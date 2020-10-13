@@ -1,0 +1,31 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} {{ composition.name }} {% endblock %}
+{% block body_block %}
+<div class="container">
+<div class="jumbotron">
+    <h1>{{ composition.name}} </h1>
+    <h3>{{ composition.instruction}}</h3>
+    <h5>{{ composition.field_set }}</h5>
+</div>
+
+<form method="POST">
+    <fieldset>
+        {% csrf_token %}
+ 
+    <legend>Choose clients: </legend>
+        {% for user in users %}
+        <div>
+        <input type="checkbox" id="{{ user.pk }}" name="users" {% if user.pk in usr %} checked  {% endif %} value="{{ user.pk }}">
+        <label for="users">{{ user.username }}</label>
+        </div>
+        {% endfor %}
+     <button type="submit" class="btn btn-dark">Submit </button>
+    </fieldset>
+</form>
+
+
+
+
+</div>
+{% endblock %}

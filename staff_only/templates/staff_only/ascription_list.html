@@ -1,0 +1,95 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Exercises {% endblock %}
+{% block body_block %}
+<div class="container">
+   
+     {% regroup ascription_list by user as users_ascriptions %}
+
+
+
+
+
+{% for ascription in users_ascriptions %}
+    <h3>{{ ascription.grouper }}</h3>
+   
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Name </th>
+                <th> Instruction </th>
+                <th> Information to save</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ascription.list %}
+            <tr>
+                <td>{{ item.composition.name }}</td>
+                <td>{{ item.composition.instruction }}</td>
+                <td>{{ item.composition.field_set }}</td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+    
+{% endfor %}
+
+</div>
+  {% comment %}
+       
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Name </th>
+                <th> Instruction </th>
+                <th> Information to save</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in ascription.list %}
+            <tr>
+                <td>{{ item.composition.name }}</td>
+                <td>{{ item.composition.instruction }}</td>
+                <td>{{ item.composition.field_set }}</td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+ 
+
+
+
+
+ {% regroup ascription_list by user as comp_list %}
+
+
+ 
+<ul>
+    {% for ascription in comp_list %}
+
+        <li> grouper: {{ ascription.grouper }}, id {{ ascription.grouper.id }}</li>
+        
+    {% endfor %}
+</ul>
+
+
+<h1>By exercise: </h1>
+
+
+
+
+{% regroup ascription_list by composition as composition_ascriptions %}
+<ul>
+    {% for ascription in composition_ascriptions %}
+        <li> grouper: {{ ascription.grouper }}, id {{ ascription.grouper.id }}</li>
+        
+    {% endfor %}
+</ul>
+
+
+ {% endcomment %}
+
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Clients {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+     
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>Name</th>
+            <th>Dogs name</th>
+            <th>Dogs age</th>
+            <th>Dogs bread</th>
+            <th>Exercises</th>
+            <th>Suspend</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in user_list %}
+            <tr>
+            <td><a href="{% url 'staff_only:client_detail' user.pk %}">{{ user.first_name }} {{ user.last_name }}</a></td>
+            
+            
+            <td>{{ user.dog.dogs_name }}</td>
+            <td>{{ user.dog.age.years }} years {% if user.dog.age.months %}
+                and {{ user.dog.age.months }} months
+            {% endif %}</td>
+            <td>{{ user.dog.dogs_bread }}</td>
+            <td>
+                {% for ascription in  user.ascription_set.all %}
+                {% if ascription.active %}
+                <p><a href="">{{ ascription.composition.name }}</a>: {{ ascription.exercise_set.count }}</p>
+                {% endif %}
+            {% endfor %}</td>
+            <td><button type="button" class="btn btn-secondary"><a style="color:white" href="">x</a></button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    
+
+
+
+{% endblock %}
+
+
+
+

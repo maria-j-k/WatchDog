@@ -1,0 +1,24 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Home page {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+    <h1>Your exercises: </h1>
+    {% for ascr in ascription_list %}
+        {% include 'training/exercises_per_client.html' %}  
+    {% endfor %}
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+

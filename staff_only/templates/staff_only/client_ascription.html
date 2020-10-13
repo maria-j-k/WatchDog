@@ -1,0 +1,85 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Client {% endblock %}
+{% block body_block %}
+<div class="container">
+  
+
+{% include 'teams/team_detail_content.html' %}
+
+
+
+<h3>Exercises: </h3>
+   
+    <table class="table">
+        <thead>
+            <tr>
+                <th> Name </th>
+                <th> Instruction </th>
+                <th> Information to save</th>
+                <th> Ascriptions</th>
+                <th> Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for composition in compositions %}
+            <tr>
+                <td>{{ composition.name }}</td>
+                <td>{{ composition.instruction }}</td>
+                <td>{{ composition.field_set }}</td>
+                <td> <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="composition" value="{{ composition.pk }}">
+                    <button type="submit" class="btn btn-dark">
+                    {% if composition.pk in ascr %}Strip{% else %}Add{% endif %}
+                    </button>
+                </form> </td>
+                <td><a href="">X</a></td>
+            </tr>
+            
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    
+{% comment %}
+
+    <button type="submit" class="btn btn-dark"> <a href="{% url 'staff_only:ascription_on_off' upk=user.pk cpk=composition.pk%}" target="_blank">Strip </a>
+ </button>
+        {% else %}
+    <button type="submit" class="btn btn-dark"> <a href="{% url 'staff_only:ascription_on_off' upk=user.pk cpk=composition.pk%}" target="_blank">Ascribe </a>
+ </button>
+ 
+
+
+
+
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Instruction</th>
+            <th>Fields</th>
+            <th>Clients</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in composition_list %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.instruction }}</td>
+            <td>{{ item.field_set }}</td>
+            <td>{% for u in item.ascription_set.all %} 
+            <a href="">{{ u.user }} </a>
+        {% endfor %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+{% endcomment %}
+
+
+{% endblock %}

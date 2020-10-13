@@ -5,22 +5,8 @@
 
 {% block body_block %}
 <div class="container">
-<h1>{{ user.first_name }} {{ user.last_name }} and {{ user.dog.dogs_name }}</h1>
-{% if user.profile_pic %}
-    {{ user.profile_pic }}
-{% endif %}
-    {{ user.dog.dogs_pic }}
-    <ul>
-    <li>Owner's first name: {{ user.first_name }}  </li>
-    <li>Owner's last name: {{ user.last_name }}  </li>
-    <li>Dog's name: {{ user.dog.dogs_name }}  </li>
-    <li>Dog's breed: {{user.dog.dogs_bread }}</li>
-    <li>Dog's age: {{ user.dog.age.years }} years {% if user.dog.age.months %} and {{ user.dog.age.months }} months  {% endif %}</li>
-    <li>Email address: {{ user.email}}</li>
-    <li>Country: {{ user.country.name }}</li>
-    <li>Zip code: {{ user.country.code }}</li>
-    <li>About you: {{ user.dog.team_description }}</li>
-</ul>
+
+{% include 'teams/team_detail_content.html' %}
 
 </div>
 {% endblock %}

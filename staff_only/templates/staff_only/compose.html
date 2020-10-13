@@ -1,0 +1,43 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Compose exercise {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+     <h1>Compose your exercise</h1>
+
+<p>For each exercise your client is supposed to record date and time it was conducted, client's remarques about that particular training and rating of dog's behavior. In addition, the following information would be saved in database:</p>
+<ul>
+    <li>date and time of saving the record</li>
+    <li>date and time of last modification of the record</li>
+    <li>weather conditions</li>
+</ul>
+
+<p>Give to your exercise meaningfull name and provide clear description. Once exercise is created, you can assing it to one or several clients.</p> 
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        {{ compose_form.as_p }}
+        {{ field_form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Send">
+    </form>
+
+
+</div>
+
+
+
+{% endblock %}
+
+
+
+
