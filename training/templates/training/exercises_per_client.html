@@ -4,7 +4,7 @@
              <tr>
                  <th>{{ ascr.composition.name }}</th>
                  {% if request.user == ascr.user %}
-                 <th><a href="">See details {{ascr.pk}} </a></th>
+                 <th><a href="{% url 'training:exercise_detail'  pk=ascr.pk  %}">See details</a></th>
                  <th><a href="{% url 'training:exercise_add' pk=ascr.pk %}">Add exercise</a></th>
                   {% endif %}
                   {% if request.user.is_staff %}

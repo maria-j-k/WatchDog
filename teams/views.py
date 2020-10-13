@@ -10,7 +10,7 @@ from django.views import View
 from django.views.generic import DetailView, TemplateView, UpdateView
 
 from .custom_mixins import FullProfileOrStaffMixin, SameUserOnlyMixin
-from .forms import AddressForm, DogForm, LoginForm, UserCreateForm, UserForm
+from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm)
 from .models import User, Dog
 
 # Create your views here.
@@ -28,7 +28,7 @@ class LoginUserView(LoginView):
         if self.request.user.is_staff:
             return reverse_lazy('staff_only:clients')
         return reverse_lazy(
-            'teams:team_detail', kwargs={
+            'training:profile', kwargs={
                 'pk': self.request.user.pk})
 
 
@@ -62,28 +62,34 @@ class ProfileInfoView(View):
         print(f'has_full_profile: {request.user.has_full_profile}')
         print(f'is_staff: {request.user.is_staff}')
         user_form = UserForm()
+        coordinates_form = CoordinatesForm()
         dog_form = DogForm()
         context = {
             'user_form': user_form,
+            'coordinates_form': coordinates_form,
             'dog_form': dog_form,
         }
         return render(request, 'teams/profile_info.html', context)
 
     def post(self, request, *args, **kwargs):
         user_form = UserForm(request.POST)
+        coordinates_form = CoordinatesForm(request.POST)
         dog_form = DogForm(request.POST)
         if not user_form.is_valid():
             return redirect(reverse('teams:profile_info', kwargs={'pk': request.user.pk}))
 #           return render(request, 'teams/profile_info.html', context)
+        if not coordinates_form.is_valid():
+            return redirect(reverse('teams:profile_info', kwargs={'pk': request.user.pk}))
         if dog_form.is_valid():
             user = request.user
             user.first_name = user_form.cleaned_data['first_name']
             user.last_name = user_form.cleaned_data['last_name']
             user.email = user_form.cleaned_data['email']
-            user.country = user_form.cleaned_data['country']
-            user.zip_code = user_form.cleaned_data['zip_code']
+            country = coordinates_form.cleaned_data['country']
+            zip_code = coordinates_form.cleaned_data['zip_code']
             dog_data = dog_form.cleaned_data
             dog = Dog.objects.create(user=user, **dog_data)
+            coordinates = Coordinates.objects.create(user=user, country=country, zip_code=zip_code)
             user.save()
             return redirect(reverse('teams:team_detail', kwargs={'pk': user.pk}))
 
@@ -102,7 +108,7 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
     second_model = Dog
     second_form_class = DogForm
     template_name = 'teams/team_edit.html'
-    
+
     def get_context_data(self, **kwargs):
         context = super(EditProfileView, self).get_context_data(**kwargs)
         if self.request.method == 'POST':
@@ -111,8 +117,8 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
             dog_object = self.second_model.objects.get(user=self.get_object())
             dog_form = self.second_form_class(instance=dog_object, prefix='dog')
         context['dog_form'] = dog_form
-        return context     
-    
+        return context
+
     def post(self, request, *args, **kwargs):
         response = super(EditProfileView, self).post(request, *args, **kwargs)
         dog_form = self.second_form_class(self.request.POST,  prefix='dog')
@@ -125,4 +131,4 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
             'dog_form': dog_form
         })
 
-    
+ 

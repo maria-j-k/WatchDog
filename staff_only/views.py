@@ -189,7 +189,7 @@ class ManageAscriptionsView(View):
             ascription = Ascription.objects.get(composition=composition, user_id=int(u))
             ascription.active = False
             ascription.save()
-        return redirect(reverse('staff_only:composition_detail', kwargs={'pk':composition.pk}))
+        return redirect(reverse('staff_only:compositions'))
 
 
 

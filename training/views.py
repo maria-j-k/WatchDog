@@ -9,7 +9,7 @@ from .models import Exercise
 from staff_only.models import Ascription, Composition
 from teams.models import User
 from teams.custom_mixins import SameUserOnlyMixin
-
+from training.utils import check_location, check_weather
 
 class HomeView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
@@ -48,6 +48,8 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, *args, **kwargs):
         ascription = Ascription.objects.get(pk=kwargs['pk'])
+#       weather = check_weather(request.user)
+#       print(weather)
 #       ascription = get_object_or_404(Ascription, pk=kwargs['pk'])
         form = ExerciseForm(request.POST)
         data = {}
@@ -71,7 +73,7 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
                 data.update(flavor_form.cleaned_data)
             exercise = Exercise.objects.create(owner=request.user,
                 ascription=ascription, **data)
-            return redirect(reverse('training:exercises', kwargs={'pk': ascription.user_id}))
+            return redirect(reverse('training:profile', kwargs={'pk': ascription.user_id}))
 #           return render(request, 'training/home.html')
         return render(request, 'training/exercise_add.html', {'from': form})
 
@@ -79,5 +81,11 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
 class AscriptionDetailView(DetailView):
     model = Ascription
     template_name = 'training/exercises_list.html'
+
+class LocationView(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        location = check_location(user)
+        return redirect(reverse('training:profile', kwargs={'pk': request.user.pk}))
 
 

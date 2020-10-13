@@ -9,75 +9,93 @@
     <title>{% block tittle_block %}  {% endblock %}</title>
 </head>
 <body>
-
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <nav class="navbar navbar-light bg-light">
-  <span class="navbar-brand mb-0 h1">Watch Dog</span>
-</nav>
-<div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
+  <a class="navbar-brand" href="#">Watch Dog</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+{% if request.user.is_authenticated %}
+    
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  {% if request.user.is_staff %}
+    <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="{% url 'staff_only:clients' %}">Home <span class="sr-only">(current)</span></a>
       </li>
-      {% if request.user.is_staff %}
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-         Clients
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Clients</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{% url 'staff_only:clients' %}">Clients List</a>
           <a class="dropdown-item" href="#">Registated users</a>
         </div>
       </li>
-      {% endif%}
-      {% if request.user.is_staff %}
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-         Exercises
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="{% url 'staff_only:compositions' %}">See your exerecises</a>
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Exercises</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'staff_only:compositions' %}">See all exerecises</a>
           <a class="dropdown-item" href="{% url 'staff_only:composition_add' %}">New exerecise</a>
           <a class="dropdown-item" href="{% url 'staff_only:ascription_add' %}">Ascribe to clients</a>
         </div>
       </li>
-      {% endif %}
-  
-      {% if not  request.user.is_staff and request.user.is_authenticated %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'training:exercises' pk=request.user.pk %}">Your Exercises</a> 
-      </li> 
-      {% endif %}
     </ul>
 
-     <ul class="nav navbar-nav ml-auto">
-      {% if request.user.is_authenticated %}
+  {% else %}
+    
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="{% url 'training:profile' pk=request.user.pk %}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Exercises</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          {% for ascr in request.user.ascription_set.all %}
+          <a class="dropdown-item" href="{% url 'training:exercise_detail' ascr.pk %}">{{ ascr.composition.name|title }}</a>
+          {% endfor %}
+        </div>
+      </li>
+    </ul>
 
-        <li class="nav-item">
-        <a class="nav-link" href="{% url 'teams:team_detail' pk=request.user.pk %}"> Welcome {{ request.user }}</a> 
+  </div>
+{% endif %}
+{% endif %}
+<div class="collapse navbar-collapse" id="navbarNav">
+  {% if request.user.is_staff %}
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'teams:logout' %}"> Logout </a> 
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'admin:index' %}"> Admin </a>  
+      </li>
+    </ul>
+   {% elif request.user.is_authenticated %}
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item active">        
+          <a class="nav-link" href="">Welcome, {{ request.user.first_name }} {{ request.user.last_name}}</a> 
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'teams:team_edit' pk=request.user.pk %}">Edit profile</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'teams:logout' %}"> Logout </a> 
       </li>
-      {% else %}
+    </ul>
+    {% else %}
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'teams:sign_in' %}"> Sign in </a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'teams:login' %}"> Login </a>  
       </li>
-      <li class="nav-item ">
-        <a class="nav-link" href="{% url 'teams:sign_in' %}"> Sign in </a>
-      </li>
-      {% endif %}
-      {% if request.user.is_superuser %}
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'admin:index' %}"> Admin </a>  
-      </li>
-      {% endif %}
     </ul>
-
-    
-  
+{% endif %}
+  </div>
 </nav>
-
 
 
         {% block body_block %}

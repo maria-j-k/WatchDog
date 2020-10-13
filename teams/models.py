@@ -1,6 +1,6 @@
 from datetime import date
 
-from django.contrib.auth.models import AbstractUser, User 
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.urls import reverse
 
@@ -15,20 +15,27 @@ class User(AbstractUser):
     #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
     # profile_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
+    _has_full_profile = models.BooleanField(null=True)
     zip_code = models.CharField(max_length=10)
     country = CountryField()
-    _has_full_profile = models.BooleanField(null=True)
-    
+    offset = models.IntegerField(null=True)
 
-    def get_absolute_url(self):      
+    def get_absolute_url(self):
         return reverse('teams:team_detail', args=[str(self.id)])
 
     @property
     def has_full_profile(self):
         self._has_full_profile = False
-        if all([self.zip_code and self.country and self.dog]):
+        if all([self.coordinates and self.dog]):
             self._has_full_profile = True
         return self._has_full_profile
+
+
+#class Coordinates(models.Model):
+#    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+#    lat = models.IntegerField(null=True)
+#    lon = models.IntegerField(null=True)
+#    city = models.CharField(max_length=255, null=True)
 
 
 class Dog(models.Model):
@@ -41,7 +48,7 @@ class Dog(models.Model):
     dogs_birthday = models.DateField()
     dogs_bread = models.CharField(max_length=64)
     team_description = models.TextField()
-    
+
 
     @property
     def age(self):
@@ -68,4 +75,3 @@ class Dog(models.Model):
     def __str__(self):
         return f'{self.user.username} i {self.dogs_name}'
 
-   

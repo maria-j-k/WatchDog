@@ -1,10 +1,10 @@
 {% extends 'teams/base.html' %}
 
-{% block tittle_block %} Home page {% endblock %}
+{% block tittle_block %} {{ ascription.user|title }} | {{ ascription.composition.name|title }}{% endblock %}
 
 
 {% block body_block %}
-
+{{ exr.comment|default_if_none:"" }}
 
 <div class="container">
 <h1>Name: {{ ascription.composition }}</h1>
@@ -60,7 +60,8 @@
                 <td>{{ exr.rating }}</td>
                 <td>{{ exr.remarques }}</td>
             {% if 'comment' in ascription.composition.field_set %}
-                <td>{{ exr.comment }}</td>
+                <td>{{  exr.comment|default:""  }}</td>
+
             {% endif %}
             </tr>
         {% endfor %}

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from django_countries.fields import CountryField
 
-from .models import User, Dog
+from .models import  Dog, User
 
 
 class LoginForm(forms.ModelForm):
@@ -22,12 +22,16 @@ class UserCreateForm(UserCreationForm):
 
 
 class UserForm(forms.ModelForm):
-    profile_pic = forms.ImageField(required=False)
+#   profile_pic = forms.ImageField(required=False)
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'zip_code', 'country')
+        fields = ('first_name', 'last_name', 'email')
 
+#class CoordinatesForm(forms.ModelForm):
+#    class Meta:
+#        model = Coordinates
+#        fields = ('country', 'zip_code')
 
 class AddressForm(forms.ModelForm):
     country = CountryField(blank_label='(select country)')

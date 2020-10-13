@@ -4,6 +4,7 @@ from django.db import models
 from staff_only.models import Ascription
 from teams.models import User
 
+
 # Create your models here.
 class Weather(models.Model):
     temp = models.IntegerField()
@@ -14,8 +15,7 @@ class Weather(models.Model):
     wind = models.IntegerField()
     sunrise = models.DateTimeField()
     sunset = models.DateTimeField()
-    offset = models.IntegerField()
-    location = models.CharField(max_length=128)
+
 
 
 
@@ -26,10 +26,10 @@ class Exercise(models.Model):
     GOOD = 1
     VERY_GOOD = 2
     RATING_CHOICES = [
-        (VERY_BAD, 'Very bad'), 
-        (BAD, 'Bad'), 
-        (NEUTRAL, 'Average'), 
-        (GOOD, 'Good'), 
+        (VERY_BAD, 'Very bad'),
+        (BAD, 'Bad'),
+        (NEUTRAL, 'Average'),
+        (GOOD, 'Good'),
         (VERY_GOOD, 'Very good'),
     ]
     CINNAMON = 1
@@ -40,7 +40,7 @@ class Exercise(models.Model):
         (ORANGE, 'orange'),
         (CLOVES, 'cloves') ,
     ]
-    
+
     created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
@@ -58,7 +58,7 @@ class Exercise(models.Model):
     place = models.CharField(max_length=32, null=True)
     place_description = models.CharField(max_length=128, null=True)
     flavor = models.IntegerField(choices=FLAVOR_CHOICES, null=True)
-    # weather = models.OneToOneField(Weather, on_delete=models.CASCADE)
+#   weather = models.OneToOneField(Weather, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-date']

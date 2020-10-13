@@ -7,6 +7,7 @@
 
 
 <div class="container">
+{% include 'teams/team_detail_content.html' %}
     <h1>Your exercises: </h1>
     {% for ascr in ascription_list %}
         {% include 'training/exercises_per_client.html' %}  
@@ -18,6 +19,9 @@
 
 
 {% endblock %}
+
+
+
 
 
 
