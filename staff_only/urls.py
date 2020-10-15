@@ -33,10 +33,6 @@ urlpatterns = [
         views.CompositionDeleteView.as_view(),
         name='composition_delete'),
     path(
-        'ascriptions/',
-        views.AscriptionListView.as_view(),
-        name='ascriptions'),
-    path(
         'ascription_add/',
         views.AscriptionAddView.as_view(),
         name='ascription_add'),
@@ -49,3 +45,4 @@ urlpatterns = [
         views.ManageAscriptionsView.as_view(),
         name='manage_ascriptions'),
 ]
+

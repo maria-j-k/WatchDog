@@ -6,6 +6,8 @@ from teams.models import User
 
 # Create your models here.
 class Weather(models.Model):
+    """Collects weather condition data from external api and saves with
+    conneciotn to exercise instance."""
     temp = models.IntegerField()
     feels_like = models.IntegerField()
     overall = models.CharField(max_length=32)
@@ -17,6 +19,8 @@ class Weather(models.Model):
 
 
 class Exercise(models.Model):
+    """Stores information about each performance of an exercise. Related to
+    user and to composition through ascription."""
     VERY_BAD = -2
     BAD = -1
     NEUTRAL = 0

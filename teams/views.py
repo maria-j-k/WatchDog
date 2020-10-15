@@ -57,29 +57,21 @@ class SingInView(View):
 
 
 class ProfileInfoView(View):
+    """Allows user to fill out the profile and have access to clients functionalities. Connects to openweather API and gathers information about geographical coordinates of the user necessery to enable functionality of checkign weather condition."""
     def get(self, request, *args, **kwargs):
-        print(request.user)
-        print(f'has_full_profile: {request.user.has_full_profile}')
-        print(f'is_staff: {request.user.is_staff}')
         user_form = UserForm()
-#       coordinates_form = CoordinatesForm()
         dog_form = DogForm()
         context = {
             'user_form': user_form,
-#           'coordinates_form': coordinates_form,
             'dog_form': dog_form,
         }
         return render(request, 'teams/profile_info.html', context)
 
     def post(self, request, *args, **kwargs):
         user_form = UserForm(request.POST)
-#       coordinates_form = CoordinatesForm(request.POST)
         dog_form = DogForm(request.POST)
         if not user_form.is_valid():
             return redirect(reverse('teams:profile_info', kwargs={'pk': request.user.pk}))
-#           return render(request, 'teams/profile_info.html', context)
-#       if not coordinates_form.is_valid():
-#           return redirect(reverse('teams:profile_info', kwargs={'pk': request.user.pk}))
         if dog_form.is_valid():
             user = request.user
             user.first_name = user_form.cleaned_data['first_name']
@@ -89,7 +81,6 @@ class ProfileInfoView(View):
             user.zip_code = user_form.cleaned_data['zip_code']
             dog_data = dog_form.cleaned_data
             dog = Dog.objects.create(user=user, **dog_data)
-#           coordinates = Coordinates.objects.create(user=user, country=country, zip_code=zip_code)
             check_location(user)
             user.save()
             return redirect(reverse('teams:team_detail', kwargs={'pk': user.pk}))
@@ -126,6 +117,8 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
         if dog_form.is_valid():
             user = self.get_object()
             self.second_model.objects.filter(user=user).update(**dog_form.cleaned_data)
+            check_location(user)
+            user.save()
             return response
         return render(request, self.template_name, {
             'form': self.get_form(self.get_form_class()),
