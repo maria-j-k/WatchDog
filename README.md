@@ -24,8 +24,9 @@ The application allows dog trainer to compose an exercise (i.e. give it a name, 
 * Add functionality for the trainer to comment each instance of exercise
 * Display details of each exercise
 * Enable clients to register more than one dog per account
+* Disable creating account for people not invited by the trainer
 
-# Technologies
+## Technologies
 * Python 3.6
 * Django 3.1
 * Bootstrap 4
