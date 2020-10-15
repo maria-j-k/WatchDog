@@ -19,7 +19,6 @@
     {% endif %}
     <form action="" method="POST">
         {{ user_form.as_p }}
-        {{ address_form.as_p }}
         {{ dog_form.as_p }}
         {% csrf_token %}
         <input type="submit" class="btn btn-primary" value="Send">

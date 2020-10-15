@@ -116,6 +116,7 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
         dog_form = self.second_form_class(self.request.POST,  prefix='dog')
         if dog_form.is_valid():
             user = self.get_object()
+            new_dog = self.second_model.objects.filter(user=user)
             self.second_model.objects.filter(user=user).update(**dog_form.cleaned_data)
             check_location(user)
             user.save()
