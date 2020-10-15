@@ -22,7 +22,7 @@ UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         context = {
-            'ascription_list': Ascription.objects.filter(user=request.user).order_by('id')
+            'ascription_list': Ascription.objects.filter(user=request.user)
         }
         return render(request, 'training/home.html', context)
 
