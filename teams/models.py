@@ -10,6 +10,13 @@ from django_countries.fields import CountryField
 
 # Create your models here.
 class User(AbstractUser):
+    """Stores users.
+        _has_full_profile: property enabling access to most of pages. Set to True if user has completed their profile.
+        zip_code: postal code provided by user. Needed to find gegraphical coordonates.
+        country: provided by user
+        lat: latitude took from openweahter api while saving profile detail
+        lon : longitude took form openweather api while saving profile detail
+        location: nearest city took form openweather api whiel saving profile detail"""
 
     # def user_directory_path(instance, filename):
     #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
@@ -44,6 +51,11 @@ class User(AbstractUser):
 
 
 class Dog(models.Model):
+    """Stores information about user's dog
+        dogs_name: name of dog
+        dogs_birthday: allows calculation of dogs age at given moment
+        dogs_bread: bread of dog
+        team_description: anything user would like to add, especially problems with dog's behavior, the problem they want to work on, etc."""
     def user_directory_path(instance, filename):
         return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 

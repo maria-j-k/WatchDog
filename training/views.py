@@ -16,7 +16,10 @@ from training.utils import check_location, check_current
 
 class HomeView(LoginRequiredMixin, FullProfileOrStaffMixin,
 UserPassesTestMixin, View):
+    """Displays welcome page for authorised user."""
     def test_func(self):
+        """Prevents users who are not staf members form seeing somebody's else
+        records."""
         # return (self.request.user.pk == self.kwargs['pk']) or (self.request.user.is_staff)
         return self.request.user.pk == self.kwargs['pk']
 
@@ -88,6 +91,8 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class AscriptionDetailView(DetailView):
+    """Displays detail of exercises connected with a composition ascribed to
+    the user."""
     model = Ascription
     template_name = 'training/exercises_list.html'
 

@@ -8,12 +8,14 @@ from teams.models import User
 
 
 class ClientListView(ListView):
+    """Displays list of all clients with some basic information attached."""
     model = User
     template_name ='staff_only/user_list.html'
     queryset = User.objects.filter(is_staff=False)
 
 
 class ClientDetailView(DetailView):
+    """Displays detailed information about a client."""
     model = User
     template_name ='staff_only/user_detail.html'
 
@@ -21,10 +23,13 @@ class ClientDetailView(DetailView):
 
 
 class CompositionListView(ListView):
+    """Displays list of all compositions with the names of clients, if the composition is ascribed to any client.
+    """
     model = Composition
 
 
 class CompositionAdd(View):
+    """Allows cretion of new composition"""
     def get(self, request, *args, **kwargs):
         context = {
             'field_form': FieldForm(),
@@ -51,10 +56,12 @@ class CompositionAdd(View):
 
 
 class CompositionDetailView(DetailView):
+    """Displays detailed information about composition"""
     model = Composition
 
 
 class CompositionEditView(View):
+    """Allows modification of composition"""
     def get(self, request, *args, **kwargs):
         composition = get_object_or_404(Composition, pk=kwargs['pk'])
         composition.field_set.split(', ')
@@ -83,29 +90,20 @@ class CompositionEditView(View):
 
 
 class CompositionDeleteView(DeleteView):
+    """Allows delete composition."""
     model = Composition
     success_url = reverse_lazy('staff_only:compositions')
 
 
 
 
-class AscriptionListView(ListView):
-    model = Ascription
-    ordering = 'composition'
-
-
-class AscriptionDetailView(DetailView):
-    model = Ascription
-
-
 class AscriptionAddView(View):
+    """Enables ascription of existing Composition to a client."""
     def get(self, request, *args, **kwargs):
         context = {
             'form': AscriptionForm(),
         }
         return render(request, 'staff_only/ascription_form.html', context)
-
-    def post(self, request, *args, **kwargs):
         form = AscriptionForm(request.POST)
         if form.is_valid():
             user = form.cleaned_data['user']
@@ -115,6 +113,7 @@ class AscriptionAddView(View):
 
 
 class ClientAscriptionView(View):
+    """Displays all existing compositions, allows strip or add ascription to an exercise to given client."""
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs['pk'])
         ascriptions = Ascription.objects.filter(user=user, active=True)
@@ -152,6 +151,7 @@ class ClientAscriptionView(View):
 
 
 class ManageAscriptionsView(View):
+    """Allows add or strip ascription of a particular composition to all of clients"""
     def get(self, request, *args, **kwargs):
         composition = get_object_or_404(Composition, pk=kwargs['pk'])
         ascriptions = Ascription.objects.filter(composition=composition, active=True)
@@ -190,12 +190,4 @@ class ManageAscriptionsView(View):
             ascription.active = False
             ascription.save()
         return redirect(reverse('staff_only:compositions'))
-
-
-
-
-
-
-
-
 
