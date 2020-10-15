@@ -13,8 +13,7 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Date</th>
-            <th>Time</th>
+            <th>Date and time</th>
             {% if 'place' in ascription.composition.field_set %}
                 <th>Place</th>
             {% endif %}
@@ -40,8 +39,7 @@
     <tbody>
         {% for exr in ascription.exercise_set.all %}
             <tr>
-                <td>{{ exr.date }}</td>
-                <td>{{ exr.time }}</td>
+                <td>{{ exr.when }}</td>
                 {% if 'place' in ascription.composition.field_set %}
                 <td>{{ exr.place }}</td>
             {% endif %}
@@ -57,7 +55,7 @@
             {% if 'flavor' in ascription.composition.field_set %}
                 <td>{{ exr.flavor }}</td>
             {% endif %}
-                <td>{{ exr.rating }}</td>
+                <td>{{ exr.get_rating_display }}</td>
                 <td>{{ exr.remarques }}</td>
             {% if 'comment' in ascription.composition.field_set %}
                 <td>{{  exr.comment|default:""  }}</td>
