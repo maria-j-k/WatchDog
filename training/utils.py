@@ -8,6 +8,10 @@ from .models import Weather
 
 
 def check_current(user):
+    """ Checks current weather condition.
+        Accepts: user object
+        Returns: weather object
+    """
     url = 'https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude={}&lang={}&appid={}&units=metric'
     api_key = 'a16e03dd75ac6b1b99ab95a77dcc6d68'
     lat = user.lat
@@ -27,6 +31,9 @@ def check_current(user):
     return weather
 
 def check_location(user):
+    """Checks users location (latitude, longitude and city) and saves to user instance
+    Accepts: user instance
+    Returns: updated user instance"""
     url = 'https://api.openweathermap.org/data/2.5/weather?zip={},{}&lang={}&appid={}&units=metric'
     api_key = 'fbbc6e682b82b0fc3538ae49dfa4621b'
     zip_code = user.zip_code
