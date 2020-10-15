@@ -3,7 +3,7 @@ from django.http import Http404
 from django.shortcuts import redirect
 
 class FullProfileOrStaffMixin(object):
-   
+
     def dispatch(self, request, *args, **kwargs):
         print('Full profile: running dispatch')
         if not (self.request.user.has_full_profile or self.request.user.is_staff):

@@ -7,12 +7,16 @@
 
 
 <div class="container">
-{% include 'teams/team_detail_content.html' %}
+<h3>Your current localization is {{ ascription_list.0.user.location }}.</h3>
+<p>When you register an exercise, current weather condition are saved in database. Register your exercises regulary. If you move to other place, change your zip code in your profile.</p>
+{% if ascription_list %}
     <h1>Your exercises: </h1>
     {% for ascr in ascription_list %}
         {% include 'training/exercises_per_client.html' %}  
     {% endfor %}
-
+    {% else %}
+        <h1>You don't have any exercises assigned yet. Contact your trainer.</h1>
+{% endif %}
 
 </div>
 

@@ -1,6 +1,5 @@
 from django.db import models
 
-# from eav.decorators import register_eav
 from staff_only.models import Ascription
 from teams.models import User
 
@@ -11,12 +10,10 @@ class Weather(models.Model):
     feels_like = models.IntegerField()
     overall = models.CharField(max_length=32)
     pressure = models.IntegerField()
-    humidity = models.IntegerField()
+#   humidity = models.IntegerField()
     wind = models.IntegerField()
-    sunrise = models.DateTimeField()
-    sunset = models.DateTimeField()
-
-
+#   sunrise = models.DateTimeField()
+#   sunset = models.DateTimeField()
 
 
 class Exercise(models.Model):
@@ -45,8 +42,9 @@ class Exercise(models.Model):
     owner = models.ForeignKey(User, editable=False, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
     ascription = models.ForeignKey(Ascription, on_delete=models.CASCADE)
-    date = models.DateField()
-    time = models.CharField(max_length=32)
+    date = models.DateField(null=True)
+    when= models.DateTimeField()
+    time = models.CharField(max_length=32, null=True)
     rating = models.IntegerField(choices=RATING_CHOICES, default=NEUTRAL)
     remarques = models.TextField('Additional remarques')
     # photo = models.ImageField(blank=True)
@@ -58,7 +56,7 @@ class Exercise(models.Model):
     place = models.CharField(max_length=32, null=True)
     place_description = models.CharField(max_length=128, null=True)
     flavor = models.IntegerField(choices=FLAVOR_CHOICES, null=True)
-#   weather = models.OneToOneField(Weather, on_delete=models.CASCADE)
+    weather = models.OneToOneField(Weather, on_delete=models.CASCADE, null=True)
 
     class Meta:
         ordering = ['-date']

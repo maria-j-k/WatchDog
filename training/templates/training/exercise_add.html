@@ -5,12 +5,10 @@
 
 {% block body_block %}
 
-{% if composition %}
-    <p>{{ composition.name }}</p>
-    <p>{{ composition.instruction }}</p>
-    <p>{{ composition.field_set }}</p>
+{% if ascription %}
+    <h1>{{ ascription.composition.name }}</h1>
+    <h3>{{ ascription.composition.instruction }}</h3>
 {% endif %}
-
     <div class="container">
      
     {% if messages %}

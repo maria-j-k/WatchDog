@@ -19,6 +19,9 @@ class User(AbstractUser):
     zip_code = models.CharField(max_length=10)
     country = CountryField()
     offset = models.IntegerField(null=True)
+    lat = models.IntegerField(null=True)
+    lon = models.IntegerField(null=True)
+    location = models.CharField(max_length=255, null=True)
 
     def get_absolute_url(self):
         return reverse('teams:team_detail', args=[str(self.id)])
@@ -26,7 +29,8 @@ class User(AbstractUser):
     @property
     def has_full_profile(self):
         self._has_full_profile = False
-        if all([self.coordinates and self.dog]):
+#       if all([self.coordinates and self.dog]):
+        if all([self.country and self.dog]):
             self._has_full_profile = True
         return self._has_full_profile
 

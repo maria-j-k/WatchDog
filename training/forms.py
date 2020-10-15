@@ -5,12 +5,16 @@ from .models import Exercise
 
 
 class ExerciseForm(forms.ModelForm):
+    when  = forms.SplitDateTimeField(widget=forms.widgets.SplitDateTimeWidget())
     class Meta:
         model = Exercise
-        fields = ('date', 'time', 'remarques', 'rating')
-        help_texts = {
-            'date': ('date in format yyyy-mm-dd')
-        }
+        fields = ('when', 'remarques', 'rating')
+
+class DTForm(forms.ModelForm):
+    when  = forms.SplitDateTimeField(widget=forms.widgets.SplitDateTimeWidget(attrs={'placeholder': 'yyyy-mm-dd'}))
+    class Meta:
+        model = Exercise
+        fields = ('when',)
 
 
 class PlaceForm(forms.ModelForm):
