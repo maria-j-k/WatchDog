@@ -15,7 +15,7 @@ class User(AbstractUser):
     #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
     # profile_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
-    _has_full_profile = models.BooleanField(null=True)
+    _has_full_profile = models.BooleanField(default=False)
     zip_code = models.CharField(max_length=10)
     country = CountryField()
     offset = models.IntegerField(null=True)
@@ -32,6 +32,7 @@ class User(AbstractUser):
 #       if all([self.coordinates and self.dog]):
         if all([self.country and self.dog]):
             self._has_full_profile = True
+        self.save()
         return self._has_full_profile
 
 
