@@ -19,8 +19,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Time</th>
+                <th>Date and time</th>
                 <th>Rating</th>
                 <th>Remarques</th>
                 <th>See detail</th>
@@ -29,9 +28,8 @@
         <tbody>
             {% for item in ascr.exercise_set.all %}
                 <tr>
-                    <td>{{ item.date }}</td>
-                    <td>{{ item.time }}</td>
-                    <td>{{ item.rating }}</td>
+                    <td>{{ item.when }}</td>
+                    <td>{{ item.get_rating_display }}</td>
                     <td>{{ item.remarques }}</td>
                     <td><a href="">{{ item.pk }}</a></td>
                 </tr>
