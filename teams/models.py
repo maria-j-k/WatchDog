@@ -7,6 +7,31 @@ from django.urls import reverse
 from django_countries.fields import CountryField
 
 
+def compute_age(birth):
+    now = date.today()
+    if  birth.month == now.month:
+        years = now.year - birth.year
+    else:
+        years = now.year - birth.year - ((birth.month, birth.day) > (now.month, now.day))
+    months = now.month - birth.month if now.month >= birth.month else now.month
+    days = now.day - birth.day
+    if days < -15:
+        if months == 0:
+            years -= 1
+            months = 11
+        else:
+            months -= 1
+    elif days > 15:
+        if months == 11:
+            years += 1
+            months = 0
+        else:
+            months += 1
+    age = {
+        'years': years,
+        'months': months
+        }
+    return age
 
 # Create your models here.
 class User(AbstractUser):
@@ -56,8 +81,8 @@ class Dog(models.Model):
         dogs_birthday: allows calculation of dogs age at given moment
         dogs_bread: bread of dog
         team_description: anything user would like to add, especially problems with dog's behavior, the problem they want to work on, etc."""
-    def user_directory_path(instance, filename):
-        return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
+#    def user_directory_path(instance, filename):
+#        return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dogs_name = models.CharField(max_length=32)
@@ -68,31 +93,7 @@ class Dog(models.Model):
 
     @property
     def age(self):
-        now = date.today()
-        if  self.dogs_birthday.month == now.month:
-            years = now.year - self.dogs_birthday.year
-        else:
-            years = now.year - self.dogs_birthday.year - ((self.dogs_birthday.month, self.dogs_birthday.day) > (now.month, now.day))
-        months = now.month - self.dogs_birthday.month if now.month >= self.dogs_birthday.month else now.month
-        days = now.day - self.dogs_birthday.day
-        if days < -15:
-            if months == 0:
-                years -= 1
-                months = 11
-            else:
-                months -= 1
-        elif days > 15:
-            if months == 11:
-                years += 1
-                months = 0
-            else:
-                months += 1
-            self._age = {
-                'years': years,
-                'months': months
-            }
-        return (self._age)
+        self._age = compute_age(self.dogs_birthday)
+        return self._age
 
-    def __str__(self):
-        return f'{self.user.username} i {self.dogs_name}'
 
