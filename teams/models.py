@@ -1,39 +1,22 @@
-from datetime import date
-
 from django.contrib.auth.models import AbstractUser, User
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.urls import reverse
-
+#from django.urls import reverse
 from django_countries.fields import CountryField
 
+from .utils import compute_age
 
-def compute_age(birth):
+
+def keep_limits(birthday):
     now = date.today()
-    if  birth.month == now.month:
-        years = now.year - birth.year
-    else:
-        years = now.year - birth.year - ((birth.month, birth.day) > (now.month, now.day))
-    months = now.month - birth.month if now.month >= birth.month else now.month
-    days = now.day - birth.day
-    if days < -15:
-        if months == 0:
-            years -= 1
-            months = 11
-        else:
-            months -= 1
-    elif days > 15:
-        if months == 11:
-            years += 1
-            months = 0
-        else:
-            months += 1
-    age = {
-        'years': years,
-        'months': months
-        }
-    return age
+    if birthday > now:
+        raise ValidationError('Your dog is not yet born???')
+    elif  birthday > now-timedelta(days=30):
+        raise ValidationError('It\'s still a baby...')
+    elif birthday < now.replace(year = now.year - 20):
+        raise ValidationError('Your dog is old enough, let him take a rest.')
 
-# Create your models here.
+
 class User(AbstractUser):
     """Stores users.
         _has_full_profile: property enabling access to most of pages. Set to True if user has completed their profile.
@@ -87,7 +70,7 @@ class Dog(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dogs_name = models.CharField(max_length=32)
     # dogs_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
-    dogs_birthday = models.DateField()
+    dogs_birthday = models.DateField(validators=[keep_limits])
     dogs_bread = models.CharField(max_length=64)
     team_description = models.TextField()
 

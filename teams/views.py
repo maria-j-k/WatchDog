@@ -84,6 +84,10 @@ class ProfileInfoView(View):
             check_location(user)
             user.save()
             return redirect(reverse('teams:team_detail', kwargs={'pk': user.pk}))
+        context = {
+            'user_form': user_form,
+            'dog_form': dog_form,
+        }
 
         return render(request, 'teams/profile_info.html', context)
 
