@@ -1,13 +1,15 @@
 from django.contrib import messages
 # from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 # from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView,
+                                       PasswordChangeDoneView)
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, TemplateView, UpdateView
+from django.views.generic import (DetailView, TemplateView, UpdateView)
 
 from .custom_mixins import FullProfileOrStaffMixin, SameUserOnlyMixin
 from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm)
@@ -39,6 +41,13 @@ class LogoutUserView(LogoutView):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
+class PasswordChange(PasswordChangeView):
+    template_name = 'teams/password_change_form.html'
+
+
+class PasswordChangeDone(PasswordChangeDoneView):
+    template_name='teams/password_change_done.html'
+
 
 class SingInView(View):
     def get(self, request, *args, **kwargs):
@@ -51,13 +60,17 @@ class SingInView(View):
             user = form.save()
             messages.success(
                 request,
-                'Account created, but inactive. Please login and complete your profile to activate your account.')
+                '''Account created, but inactive.
+                Please login and complete your profile to activate your account.''')
             return redirect('teams:login')
         return render(request, 'teams/sign_in.html', {'form': form})
 
 
 class ProfileInfoView(View):
-    """Allows user to fill out the profile and have access to clients functionalities. Connects to openweather API and gathers information about geographical coordinates of the user necessery to enable functionality of checkign weather condition."""
+    """Allows user to fill out the profile and have access to clients functionalities.
+    Connects to openweather API and gathers information about geographical
+    coordinates of the user necessery to enable functionality of checkign weather condition."""
+
     def get(self, request, *args, **kwargs):
         user_form = UserForm()
         dog_form = DogForm()
@@ -71,7 +84,8 @@ class ProfileInfoView(View):
         user_form = UserForm(request.POST)
         dog_form = DogForm(request.POST)
         if not user_form.is_valid():
-            return redirect(reverse('teams:profile_info', kwargs={'pk': request.user.pk}))
+            return redirect(reverse('teams:profile_info',
+                                    kwargs={'pk': request.user.pk}))
         if dog_form.is_valid():
             user = request.user
             user.first_name = user_form.cleaned_data['first_name']
@@ -83,7 +97,8 @@ class ProfileInfoView(View):
             dog = Dog.objects.create(user=user, **dog_data)
             check_location(user)
             user.save()
-            return redirect(reverse('teams:team_detail', kwargs={'pk': user.pk}))
+            return redirect(
+                reverse('teams:team_detail', kwargs={'pk': user.pk}))
         context = {
             'user_form': user_form,
             'dog_form': dog_form,
@@ -111,17 +126,20 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
             dog_form = self.second_form_class(self.request.POST, prefix='dog')
         else:
             dog_object = self.second_model.objects.get(user=self.get_object())
-            dog_form = self.second_form_class(instance=dog_object, prefix='dog')
+            dog_form = self.second_form_class(
+                instance=dog_object, prefix='dog')
         context['dog_form'] = dog_form
         return context
 
     def post(self, request, *args, **kwargs):
         response = super(EditProfileView, self).post(request, *args, **kwargs)
-        dog_form = self.second_form_class(self.request.POST,  prefix='dog')
+        dog_form = self.second_form_class(self.request.POST, prefix='dog')
         if dog_form.is_valid():
             user = self.get_object()
             new_dog = self.second_model.objects.filter(user=user)
-            self.second_model.objects.filter(user=user).update(**dog_form.cleaned_data)
+            self.second_model.objects.filter(
+                user=user).update(
+                **dog_form.cleaned_data)
             check_location(user)
             user.save()
             return response
@@ -129,5 +147,3 @@ class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
             'form': self.get_form(self.get_form_class()),
             'dog_form': dog_form
         })
-
-

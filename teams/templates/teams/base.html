@@ -27,8 +27,10 @@
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Clients</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'staff_only:clients' %}">Clients List</a>
-          <a class="dropdown-item" href="#">Registated users</a>
+          <a class="dropdown-item" href="{% url 'staff_only:clients' %}">All clients</a>
+          <a class="dropdown-item" href="#">Training clients</a>
+          <a class="dropdown-item" href="#">Clients without exercises</a>
+          <a class="dropdown-item" href="#">Clients with no full profile</a>
         </div>
       </li>
       <li class="nav-item dropdown">
