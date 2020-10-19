@@ -3,7 +3,8 @@ from django.contrib import messages
 # from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView,
-                                       PasswordChangeDoneView)
+            PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView,
+            PasswordResetCompleteView, PasswordResetConfirmView)
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
@@ -41,9 +42,24 @@ class LogoutUserView(LogoutView):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
+
 class PasswordChange(PasswordChangeView):
     template_name = 'teams/password_change_form.html'
 
+
+class PasswordReset(PasswordResetView):
+    pass
+
+
+class PasswordResetDone(PasswordResetDoneView):
+    pass
+
+
+class PasswordResetConfirm(PasswordResetConfirmView):
+    succes_url = reverse_lazy('teams:login')
+
+class PasswordResetComplete(PasswordResetCompleteView):
+    pass
 
 class PasswordChangeDone(PasswordChangeDoneView):
     template_name='teams/password_change_done.html'
