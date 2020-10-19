@@ -81,7 +81,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'watch_dog.wsgi.application'
 
+EMAIL_HOST = 'localhost' 
 
+EMAIL_PORT = 1025
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 

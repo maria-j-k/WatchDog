@@ -7,11 +7,47 @@ from .models import Ascription, Composition
 from teams.models import User
 
 
-class ClientListView(ListView):
+class ClientListAll(ListView):
     """Displays list of all clients with some basic information attached."""
     model = User
     template_name ='staff_only/user_list.html'
     queryset = User.objects.filter(is_staff=False)
+
+class ClientListTraining(ListView):
+    """Displays list of clients who has already exercises ascribed."""
+    model = User
+    template_name = 'staff_only/training_list.html'
+    queryset = User.objects.filter(ascription__isnull=False)
+
+
+class ClientsNeedAscription(ListView):
+    """Displays all active users with full profile, who has no exercises
+    ascribed yet."""
+    model = User
+    template_name = 'staff_only/need_ascription.html'
+    queryset = User.objects.filter(_has_full_profile=True, ascription__isnull=True)
+
+
+class RegisteredPersons(ListView):
+    """Displays all person, who has created an account, but are not yet
+    activated by the admin"""
+    model = User
+    template_name = 'staff_only/registered_persons.html'
+    queryset = User.objects.filter(is_active=False, ascription__isnull=True)
+
+
+class SuspendedClients(ListView):
+    """Displays all clients who has been suspended but not deleted"""
+    model = User
+    template_name = 'staff_only/suspended_clients.html'
+    queryset = User.objects.filter(is_active=False, ascription__isnull=False)
+
+
+class StaffListView(ListView):
+    """Displays all clients who has been suspended but not deleted"""
+    model = User
+    template_name = 'staff_only/staff_list.html'
+    queryset = User.objects.filter(is_staff=True)
 
 
 class ClientDetailView(DetailView):
