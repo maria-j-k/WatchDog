@@ -1,7 +1,8 @@
+import uuid
 from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
-#from django.urls import reverse
+from django.urls import reverse
 from django_countries.fields import CountryField
 
 from .utils import compute_age
@@ -15,6 +16,18 @@ def keep_limits(birthday):
         raise ValidationError('It\'s still a baby...')
     elif birthday < now.replace(year = now.year - 20):
         raise ValidationError('Your dog is old enough, let him take a rest.')
+
+
+class Invited(models.Model):
+    """Stores emails and uuids for prospective clients"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    email = models.EmailField(max_length=254, unique=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+#    def get_absolute_url(self):
+#        return reverse('teams:log_invited', kwargs={'pk': self.pk})
+
+
 
 
 class User(AbstractUser):

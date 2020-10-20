@@ -3,17 +3,19 @@ from django.contrib import messages
 # from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView,
-                                       PasswordChangeDoneView)
+            PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView,
+            PasswordResetCompleteView, PasswordResetConfirmView)
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import (DetailView, TemplateView, UpdateView)
 
 from .custom_mixins import FullProfileOrStaffMixin, SameUserOnlyMixin
-from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm)
-from .models import User, Dog
+from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm, InviteForm)
+from .models import User, Invited, Dog
 from training.utils import check_location
 # Create your views here.
 
@@ -41,12 +43,73 @@ class LogoutUserView(LogoutView):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
+
 class PasswordChange(PasswordChangeView):
     template_name = 'teams/password_change_form.html'
 
 
 class PasswordChangeDone(PasswordChangeDoneView):
     template_name='teams/password_change_done.html'
+
+
+class PasswordReset(PasswordResetView):
+    pass
+
+
+class PasswordResetDone(PasswordResetDoneView):
+    pass
+
+
+class PasswordResetConfirm(PasswordResetConfirmView):
+    succes_url = reverse_lazy('teams:login')
+
+
+class PasswordResetComplete(PasswordResetCompleteView):
+    pass
+
+
+class SendInvitation(View):
+    def get(self, request, *args, **kwargs):
+        form = InviteForm()
+        return render(request, 'teams/invite.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = InviteForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            invited, created = Invited.objects.get_or_create(email=email)
+            if not created:
+                msg = 'This user has already been invited'
+                print(msg)
+                return render(request, 'teams/invite.html', {'form': form})
+            path = request.build_absolute_uri(reverse('teams:check_invited', args=(invited.pk, )))
+            send_mail(
+                    'Invitation from WatchDog site',
+                    '''Please, join our WatchDog site.
+                Click the link below, sign in and train with us.\n{}'''.format(path),
+                    'from@example.com',
+                    [invited.email],
+                    fail_silently=False,
+                )
+            print(path)
+            return redirect(reverse('staff_only:training_clients'))
+        return render(request, 'teams/invite.html', {'form': form})
+
+class CheckInvited(View):
+    def get(self, request, *args, **kwargs):
+        form = InviteForm()
+        return render(request, 'teams/invite.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = InviteForm(request.POST)
+        if form.is_valid():
+            invited = get_object_or_404(Invited, email=form.cleaned_data['email'])
+            if str(invited.pk) == kwargs['pk']:
+                return redirect(reverse('teams:sign_in', args=(invited.pk, )))
+            else:
+                msg = 'Your email doesn\'t match the token. Please contact the site administrator.'
+                return redirect(reverse('teams:home'))
+        return render(request, 'teams/invite.html', {'form': form})
 
 
 class SingInView(View):
@@ -58,6 +121,10 @@ class SingInView(View):
         form = UserCreateForm(request.POST)
         if form.is_valid():
             user = form.save()
+            invited = Invited.objects.get(pk=kwargs['pk'])
+            user.email = invited.email
+            invited.delete()
+            user.save()
             messages.success(
                 request,
                 '''Account created, but inactive.
@@ -72,7 +139,7 @@ class ProfileInfoView(View):
     coordinates of the user necessery to enable functionality of checkign weather condition."""
 
     def get(self, request, *args, **kwargs):
-        user_form = UserForm()
+        user_form = UserForm(instance=request.user)
         dog_form = DogForm()
         context = {
             'user_form': user_form,

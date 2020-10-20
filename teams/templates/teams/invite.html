@@ -1,0 +1,25 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Invite new client{% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="jumbotron">
+    
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Send">
+    </form>
+</div>
+
+{% endblock %}

@@ -21,6 +21,7 @@ class ClientListTraining(ListView):
     queryset = User.objects.filter(ascription__isnull=False, is_active=True).distinct()
 
 
+
 class ClientsNeedAscription(ListView):
     """Displays all active users with full profile, who has no exercises
     ascribed yet or whose ascriptions has been anulated."""
