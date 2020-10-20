@@ -52,7 +52,7 @@ class Exercise(models.Model):
     rating = models.IntegerField(choices=RATING_CHOICES, default=NEUTRAL)
     remarques = models.TextField('Additional remarques')
     # photo = models.ImageField(blank=True)
-    # film = models.URLField('nagranie', blank=True)
+    film = models.URLField('nagranie', blank=True, null=True)
     comment = models.TextField('Instructor\'s comments', null=True)
     duration = models.PositiveIntegerField(null=True)
     repetitions = models.SmallIntegerField(null=True)

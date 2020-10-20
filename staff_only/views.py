@@ -64,13 +64,8 @@ class ToggleActive(View): # TODO to previous page
         next_url = request.GET.get('next')
         print(next_url)
         user = User.objects.get(pk=kwargs['pk'])
-        if user.is_active:
-            user.is_active = False
-        else:
-            user.is_active = True
-        user.save()
-        return redirect(reverse('staff_only:training_clients'))
-
+        user.toggle_active()
+        return redirect(next_url)
 
 
 class CompositionListView(ListView):
@@ -241,4 +236,3 @@ class ManageAscriptionsView(View):
             ascription.active = False
             ascription.save()
         return redirect(reverse('staff_only:compositions'))
-

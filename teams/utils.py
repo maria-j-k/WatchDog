@@ -1,5 +1,8 @@
 from datetime import date, timedelta
 
+from django.core.mail import send_mail
+from django.urls import reverse
+
 
 def compute_age(birth):
     now = date.today()
@@ -27,3 +30,14 @@ def compute_age(birth):
         }
     return age
 
+
+def send_invitation(request, invited):
+    path = request.build_absolute_uri(reverse('teams:check_invited', args=(invited.pk, )))
+    send_mail(
+        'Invitation from WatchDog site',
+        '''Please, join our WatchDog site.
+        Click the link below, sign in and train with us.\n{}'''.format(path),
+        'from@example.com',
+        [invited.email],
+        fail_silently=False,
+        )

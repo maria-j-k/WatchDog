@@ -8,7 +8,7 @@ class ExerciseForm(forms.ModelForm):
     when  = forms.SplitDateTimeField(widget=forms.widgets.SplitDateTimeWidget())
     class Meta:
         model = Exercise
-        fields = ('when', 'remarques', 'rating')
+        fields = ('when', 'remarques', 'rating', 'film')
 
 class DTForm(forms.ModelForm):
     when  = forms.SplitDateTimeField(widget=forms.widgets.SplitDateTimeWidget(attrs={'placeholder': 'yyyy-mm-dd'}))

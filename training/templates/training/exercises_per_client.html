@@ -22,6 +22,7 @@
                 <th>Date and time</th>
                 <th>Rating</th>
                 <th>Remarques</th>
+                <th>Film</th>
                 <th>See detail</th>
             </tr>
         </thead>
@@ -31,6 +32,11 @@
                     <td>{{ item.when }}</td>
                     <td>{{ item.get_rating_display }}</td>
                     <td>{{ item.remarques }}</td>
+                    {% if item.film %}
+                    <th><a href="{{ item.film }}" target="_blank">Film</a></th>
+                     {% else %}
+                         <th></th>   
+                    {% endif %}
                     <td><a href="">{{ item.pk }}</a></td>
                 </tr>
                 

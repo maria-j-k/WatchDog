@@ -1,13 +1,11 @@
 from django.contrib import messages
 # from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-# from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView,
             PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView,
             PasswordResetCompleteView, PasswordResetConfirmView)
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
@@ -16,6 +14,7 @@ from django.views.generic import (DetailView, TemplateView, UpdateView)
 from .custom_mixins import FullProfileOrStaffMixin, SameUserOnlyMixin
 from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm, InviteForm)
 from .models import User, Invited, Dog
+from .utils import send_invitation
 from training.utils import check_location
 # Create your views here.
 
@@ -77,21 +76,14 @@ class SendInvitation(View):
         form = InviteForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
+            if User.objects.filter(email=email).exists():
+                messages.info(request,'This person is already registered.')
+                return render(request, 'teams/invite.html', {'form': form})
             invited, created = Invited.objects.get_or_create(email=email)
             if not created:
-                msg = 'This user has already been invited'
-                print(msg)
+                messages.info(request,'This person has already been invited.')
                 return render(request, 'teams/invite.html', {'form': form})
-            path = request.build_absolute_uri(reverse('teams:check_invited', args=(invited.pk, )))
-            send_mail(
-                    'Invitation from WatchDog site',
-                    '''Please, join our WatchDog site.
-                Click the link below, sign in and train with us.\n{}'''.format(path),
-                    'from@example.com',
-                    [invited.email],
-                    fail_silently=False,
-                )
-            print(path)
+            send_invitation(request, invited)
             return redirect(reverse('staff_only:training_clients'))
         return render(request, 'teams/invite.html', {'form': form})
 
@@ -107,7 +99,8 @@ class CheckInvited(View):
             if str(invited.pk) == kwargs['pk']:
                 return redirect(reverse('teams:sign_in', args=(invited.pk, )))
             else:
-                msg = 'Your email doesn\'t match the token. Please contact the site administrator.'
+                messages.warning(
+                    request, 'Your email doesn\'t match the token. Please contact the site administrator.')
                 return redirect(reverse('teams:home'))
         return render(request, 'teams/invite.html', {'form': form})
 
@@ -174,10 +167,10 @@ class ProfileInfoView(View):
         return render(request, 'teams/profile_info.html', context)
 
 
-class TeamView(SameUserOnlyMixin, FullProfileOrStaffMixin, DetailView):
-    model = User
-    context_object_name = 'user'
-    template_name = 'teams/team_detail.html'
+#class TeamView(SameUserOnlyMixin, FullProfileOrStaffMixin, DetailView):
+#    model = User
+#    context_object_name = 'user'
+#    template_name = 'teams/team_detail.html'
 
 
 class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):

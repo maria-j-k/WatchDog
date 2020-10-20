@@ -38,7 +38,6 @@ class User(AbstractUser):
         lat: latitude took from openweahter api while saving profile detail
         lon : longitude took form openweather api while saving profile detail
         location: nearest city took form openweather api whiel saving profile detail"""
-
     # def user_directory_path(instance, filename):
     #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
@@ -62,6 +61,14 @@ class User(AbstractUser):
             self._has_full_profile = True
         self.save()
         return self._has_full_profile
+
+    def toggle_active(self):
+        if self.is_active == True:
+            self.is_active = False
+        else:
+            self.is_active = True
+        self.save()
+        return self.is_active
 
 
 #class Coordinates(models.Model):
