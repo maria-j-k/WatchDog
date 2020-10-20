@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from django_countries.fields import CountryField
 
-from .models import  Dog, User
+from .models import  Dog, Invited, User
 
 
 class LoginForm(forms.ModelForm):
@@ -50,3 +50,5 @@ class DogForm(forms.ModelForm):
             'dogs_bread', 'team_description')
 
 
+class InviteForm(forms.Form):
+    email = forms.CharField(max_length=254)

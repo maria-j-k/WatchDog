@@ -17,7 +17,7 @@ class ClientListTraining(ListView):
     """Displays list of clients who has already exercises ascribed."""
     model = User
     template_name = 'staff_only/training_list.html'
-    queryset = User.objects.filter(ascription__isnull=False)
+    queryset = User.objects.filter(ascription__isnull=False).distinct()
 
 
 class ClientsNeedAscription(ListView):
