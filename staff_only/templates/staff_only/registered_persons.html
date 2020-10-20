@@ -7,12 +7,12 @@
 
 
 <div class="container">
-     
+   <h3>Person who has registered to your site but didn't fill up their profile.</h3> 
+
 <table class="table">
     <thead>
         <tr>
             <th>Username</th>
-            <th>Set active</th>
             <th>Delete</th>
         </tr>
     </thead>
@@ -21,7 +21,6 @@
             <tr>
             <td><a href="">{{ user.username }}</a></td>
             
-            <td><button type="button" class="btn btn-secondary"><a style="color:white" href="">x</a></button></td>
             <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
             </tr>
         {% endfor %}

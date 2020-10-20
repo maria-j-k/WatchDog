@@ -28,9 +28,10 @@
         Clients</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{% url 'staff_only:clients' %}">All clients</a>
-          <a class="dropdown-item" href="#">Training clients</a>
-          <a class="dropdown-item" href="#">Clients without exercises</a>
-          <a class="dropdown-item" href="#">Clients with no full profile</a>
+          <a class="dropdown-item" href="{% url 'staff_only:training_clients'%}">Training clients</a>
+          <a class="dropdown-item" href="{% url 'staff_only:need_ascription' %}">Clients without exercises</a>
+          <a class="dropdown-item" href="{% url 'staff_only:registered_users' %}">Registered persons</a>
+          <a class="dropdown-item" href="{% url 'staff_only:suspended_clients' %}">Suspended clients</a>
         </div>
       </li>
       <li class="nav-item dropdown">

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import DeleteView, DetailView, ListView, View
+from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
+        View)
 
 from .forms import AscribeCompositionForm, AscriptionForm, ComposeForm, FieldForm
 from .models import Ascription, Composition
@@ -17,37 +18,40 @@ class ClientListTraining(ListView):
     """Displays list of clients who has already exercises ascribed."""
     model = User
     template_name = 'staff_only/training_list.html'
-    queryset = User.objects.filter(ascription__isnull=False).distinct()
+    queryset = User.objects.filter(ascription__isnull=False, is_active=True).distinct()
+
 
 
 class ClientsNeedAscription(ListView):
     """Displays all active users with full profile, who has no exercises
-    ascribed yet."""
+    ascribed yet or whose ascriptions has been anulated."""
     model = User
     template_name = 'staff_only/need_ascription.html'
-    queryset = User.objects.filter(_has_full_profile=True, ascription__isnull=True)
+    queryset = User.objects.filter(_has_full_profile=True,
+                                   ascription__isnull=True,
+                                   is_staff=False)
 
 
 class RegisteredPersons(ListView):
-    """Displays all person, who has created an account, but are not yet
-    activated by the admin"""
+    """Displays all person, who has created an account, but didn't fill out their
+    profile."""
     model = User
     template_name = 'staff_only/registered_persons.html'
-    queryset = User.objects.filter(is_active=False, ascription__isnull=True)
+    queryset = User.objects.filter(_has_full_profile=False, is_staff=False)
 
 
 class SuspendedClients(ListView):
     """Displays all clients who has been suspended but not deleted"""
     model = User
     template_name = 'staff_only/suspended_clients.html'
-    queryset = User.objects.filter(is_active=False, ascription__isnull=False)
+    queryset = User.objects.filter(is_active=False)
 
 
 class StaffListView(ListView):
-    """Displays all clients who has been suspended but not deleted"""
+    """Displays all staff members who has not admin status."""
     model = User
     template_name = 'staff_only/staff_list.html'
-    queryset = User.objects.filter(is_staff=True)
+    queryset = User.objects.filter(is_staff=True, is_superuser=False)
 
 
 class ClientDetailView(DetailView):
@@ -55,6 +59,17 @@ class ClientDetailView(DetailView):
     model = User
     template_name ='staff_only/user_detail.html'
 
+class ToggleActive(View): # TODO to previous page
+    def get(self, request, *args, **kwargs):
+        next_url = request.GET.get('next')
+        print(next_url)
+        user = User.objects.get(pk=kwargs['pk'])
+        if user.is_active:
+            user.is_active = False
+        else:
+            user.is_active = True
+        user.save()
+        return redirect(reverse('staff_only:training_clients'))
 
 
 

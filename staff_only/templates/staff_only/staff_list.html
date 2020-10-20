@@ -1,0 +1,42 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %}Staff members: {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+    <br></br>
+    {% if user_list %}
+    <h5>Suspended clients:</h5> 
+    <br></br>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Manage permissions </th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in user_list %}
+            <tr>
+            <td><a href="{% url 'staff_only:client_detail' user.pk %}">{{ user.first_name }} {{ user.last_name }}</a></td>
+            
+            <td>{{ user.email }}</td>
+            <td><button type="button" class="btn btn-secondary"><a style="color:white" href="">x</a></button></td>
+            <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+    {% else %}
+        <h5>You have no staff members</h5>
+
+    {%endif %}
+
+
+{% endblock %}
+

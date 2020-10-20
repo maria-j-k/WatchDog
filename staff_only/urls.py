@@ -33,6 +33,10 @@ urlpatterns = [
         views.ClientDetailView.as_view(),
         name='client_detail'),
     path(
+        'toggle_active/<int:pk>/',
+        views.ToggleActive.as_view(),
+        name='toggle_active'),
+    path(
         'compositions/',
         views.CompositionListView.as_view(),
         name='compositions'),
