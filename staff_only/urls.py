@@ -6,12 +6,36 @@ app_name = 'staff_only'
 urlpatterns = [
     path(
         'clients/',
-        views.ClientListView.as_view(),
+        views.ClientListAll.as_view(),
         name='clients'),
+    path(
+        'training_clients/',
+         views.ClientListTraining.as_view(),
+         name='training_clients'),
+    path(
+        'need_ascription/',
+         views.ClientsNeedAscription.as_view(),
+         name='need_ascription'),
+    path(
+        'registered_users/',
+         views.RegisteredPersons.as_view(),
+         name='registered_users'),
+    path(
+        'suspended_clients/',
+         views.SuspendedClients.as_view(),
+         name='suspended_clients'),
+    path(
+        'staff/',
+        views.StaffListView.as_view(),
+        name='list_staff'),
     path(
         'client/<int:pk>/',
         views.ClientDetailView.as_view(),
         name='client_detail'),
+    path(
+        'toggle_active/<int:pk>/',
+        views.ToggleActive.as_view(),
+        name='toggle_active'),
     path(
         'compositions/',
         views.CompositionListView.as_view(),

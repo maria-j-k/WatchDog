@@ -28,7 +28,7 @@ class LoginUserView(LoginView):
     def get_success_url(self):
         url = self.get_redirect_url()
         if self.request.user.is_staff:
-            return reverse_lazy('staff_only:clients')
+            return reverse_lazy('staff_only:training_clients')
         return reverse_lazy(
             'training:profile', kwargs={
                 'pk': self.request.user.pk})

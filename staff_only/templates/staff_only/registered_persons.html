@@ -1,0 +1,31 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Clients {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+   <h3>Person who has registered to your site but didn't fill up their profile.</h3> 
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in user_list %}
+            <tr>
+            <td><a href="">{{ user.username }}</a></td>
+            
+            <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
