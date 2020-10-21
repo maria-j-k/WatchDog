@@ -1,31 +1,34 @@
 {% extends 'teams/base.html' %}
 
-{% block tittle_block %} Clients {% endblock %}
+{% block tittle_block %} Invited {% endblock %}
 
 
 {% block body_block %}
 
 
 <div class="container">
-   <h3>Registered persons who didn't fill their profiles:</h3> 
+   {% if invited_list %}
+   <h3>Invited persons:</h3> 
 
 <table class="table">
     <thead>
         <tr>
-            <th>Username</th>
+            <th>Email</th>
             <th>Delete</th>
         </tr>
     </thead>
     <tbody>
-        {% for user in user_list %}
+        {% for invited in invited_list %}
             <tr>
-            <td><a href="">{{ user.username }}</a></td>
+            <td><a href="">{{ invited.email }}</a></td>
             
             <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
-
+{% else %}
+               <h1>There is no pending invitations.</h1>
+   {% endif %}
 {% endblock %}
 

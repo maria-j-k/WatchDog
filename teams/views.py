@@ -1,5 +1,5 @@
 from django.contrib import messages
-# from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView,
             PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView,
@@ -67,7 +67,8 @@ class PasswordResetComplete(PasswordResetCompleteView):
     pass
 
 
-class SendInvitation(View):
+class SendInvitation(PermissionRequiredMixin, View):
+    permission_required = 'c_can_invite'
     def get(self, request, *args, **kwargs):
         form = InviteForm()
         return render(request, 'teams/invite.html', {'form': form})
@@ -105,7 +106,7 @@ class CheckInvited(View):
         return render(request, 'teams/invite.html', {'form': form})
 
 
-class SingInView(View):
+class SingInView(SameUserOnlyMixin, View):
     def get(self, request, *args, **kwargs):
         form = UserCreateForm()
         return render(request, 'teams/sign_in.html', {'form': form})
@@ -126,10 +127,10 @@ class SingInView(View):
         return render(request, 'teams/sign_in.html', {'form': form})
 
 
-class ProfileInfoView(View):
+class ProfileInfoView(LoginRequiredMixin, View):
     """Allows user to fill out the profile and have access to clients functionalities.
     Connects to openweather API and gathers information about geographical
-    coordinates of the user necessery to enable functionality of checkign weather condition."""
+    coordinates of the user necessery to enable functionality of checking weather condition."""
 
     def get(self, request, *args, **kwargs):
         user_form = UserForm(instance=request.user)
@@ -158,7 +159,7 @@ class ProfileInfoView(View):
             check_location(user)
             user.save()
             return redirect(
-                reverse('teams:team_detail', kwargs={'pk': user.pk}))
+                reverse('training:profile', kwargs={'pk': user.pk}))
         context = {
             'user_form': user_form,
             'dog_form': dog_form,
@@ -173,7 +174,10 @@ class ProfileInfoView(View):
 #    template_name = 'teams/team_detail.html'
 
 
-class EditProfileView(FullProfileOrStaffMixin, SameUserOnlyMixin, UpdateView):
+class EditProfileView(UserPassesTestMixin, UpdateView):
+    def test_func(self):
+        print(self.kwargs)
+        return self.request.user.pk == int(self.kwargs['pk'])
     model = User
     form_class = UserForm
     second_model = Dog

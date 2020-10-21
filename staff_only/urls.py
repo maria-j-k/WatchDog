@@ -28,6 +28,10 @@ urlpatterns = [
          views.RegisteredPersons.as_view(),
          name='registered_users'),
     path(
+        'invited_people/',
+        views.ListInvited.as_view(),
+         name='invited_people'),
+    path(
         'suspended_clients/',
          views.SuspendedClients.as_view(),
          name='suspended_clients'),
@@ -67,6 +71,9 @@ urlpatterns = [
         'ascriptions/<int:pk>/',
         views.ClientAscriptionView.as_view(),
         name='client_ascriptions'),
+    path('ascriptions_toggle/<int:user_pk>/<int:comp_pk>/',
+         views.ToggleAscriptionView.as_view(),
+         name='toggle_ascription'),
     path(
         'manage_ascriptions/<int:pk>/',
         views.ManageAscriptionsView.as_view(),
