@@ -1,4 +1,6 @@
 import uuid
+from datetime import date, timedelta
+
 from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models

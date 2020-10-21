@@ -35,6 +35,23 @@ class SameUserOnlyMixin(object):
             request, *args, **kwargs)
 
 
+class SameUserOrStaffMixin(object):
+
+    def has_permissions(self):
+        print('Same user or staff: running has_permissions')
+        print(f'object: {self.get_object()}')
+        print(f'request.user: {self.request.user}')
+        print(self.get_object()==self.request.user)
+        return self.get_object() == self.request.user or self.request.user.is_staff
+
+    def dispatch(self, request, *args, **kwargs):
+        if not self.has_permissions():
+            print('Same user: dispatch failed')
+            raise Http404('Page not found.')
+        print('Same user: dispatch passed')
+        return super(SameUserOrStaffMixin, self).dispatch(
+            request, *args, **kwargs)
+
 class SameUserMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         print(f'authenticated: {request.user.is_authenticated}')

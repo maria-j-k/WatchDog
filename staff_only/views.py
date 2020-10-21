@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
@@ -7,18 +7,23 @@ from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
 from .forms import (AscribeCompositionForm, AscriptionForm, ComposeForm,
 FieldForm, MakeStaffForm)
 from .models import Ascription, Composition
-from teams.models import User
+from teams.models import Invited, User
 
 
-class StaffListView(ListView):
+class StaffListView(UserPassesTestMixin, ListView):
     """Displays all staff members who has not admin status."""
+    def test_func(self):
+        return self.request.user.is_staff
     model = User
     template_name = 'staff_only/staff_list.html'
     queryset = User.objects.filter(is_staff=True, is_superuser=False)
 
 
-class MakeStaff(View):
+class MakeStaff(UserPassesTestMixin, View):
     """Allows to change the status of a user and accord staff privileges."""
+    def test_func(self):
+        return self.request.user.is_superuser
+
     def get(self, request, *args, **kwargs):
         form = MakeStaffForm()
         return render(request, 'staff_only/make_staff_form.html', {'form': form})
@@ -39,17 +44,23 @@ class MakeStaff(View):
 #    queryset = User.objects.filter(is_staff=False)
 
 
-class ClientListTraining(ListView):
+class ClientListTraining(UserPassesTestMixin, ListView):
     """Displays list of clients who has already exercises ascribed."""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = User
     template_name = 'staff_only/training_list.html'
     queryset = User.objects.filter(ascription__isnull=False, is_active=True).distinct()
 
 
 
-class ClientsNeedAscription(ListView):
+class ClientsNeedAscription(UserPassesTestMixin, ListView):
     """Displays all active users with full profile, who has no exercises
     ascribed yet or whose ascriptions has been anulated."""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = User
     template_name = 'staff_only/need_ascription.html'
     queryset = User.objects.filter(_has_full_profile=True,
@@ -57,16 +68,32 @@ class ClientsNeedAscription(ListView):
                                    is_staff=False)
 
 
-class RegisteredPersons(ListView):
+class RegisteredPersons(UserPassesTestMixin, ListView):
     """Displays all person, who has created an account, but didn't fill out their
     profile."""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = User
     template_name = 'staff_only/registered_persons.html'
     queryset = User.objects.filter(_has_full_profile=False, is_staff=False)
 
 
-class SuspendedClients(ListView):
+class ListInvited(UserPassesTestMixin, ListView):
+    """Displays all invited people who had not register yet."""
+    def test_func(self):
+        return self.request.user.is_staff
+
+    model = Invited 
+    template_name = 'staff_only/invited.html'
+    queryset = Invited.objects.all()
+
+
+class SuspendedClients(UserPassesTestMixin, ListView):
     """Displays all clients who has been suspended but not deleted"""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = User
     template_name = 'staff_only/suspended_clients.html'
     queryset = User.objects.filter(is_active=False)
@@ -74,8 +101,11 @@ class SuspendedClients(ListView):
 
 
 
-class ClientDetailView(DetailView):
+class ClientDetailView(UserPassesTestMixin, DetailView):
     """Displays detailed information about a client."""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = User
     template_name ='staff_only/user_detail.html'
 
@@ -90,14 +120,18 @@ class ToggleActive(PermissionRequiredMixin, View):
         return redirect(next_url)
 
 
-class CompositionListView(ListView):
+class CompositionListView(UserPassesTestMixin, ListView):
     """Displays list of all compositions with the names of clients, if the composition is ascribed to any client.
     """
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = Composition
 
 
-class CompositionAdd(View):
+class CompositionAdd(PermissionRequiredMixin, View):
     """Allows cretion of new composition"""
+    permission_required = 'c_can_add_composition'
     def get(self, request, *args, **kwargs):
         context = {
             'field_form': FieldForm(),
@@ -123,13 +157,17 @@ class CompositionAdd(View):
         return render(request, 'staff_only/compose.html', context)
 
 
-class CompositionDetailView(DetailView):
+class CompositionDetailView(UserPassesTestMixin, DetailView):
     """Displays detailed information about composition"""
+    def test_func(self):
+        return self.request.user.is_staff
+
     model = Composition
 
 
-class CompositionEditView(View):
+class CompositionEditView(PermissionRequiredMixin, View):
     """Allows modification of composition"""
+    permission_required = 'c_can_modify_composition'
     def get(self, request, *args, **kwargs):
         composition = get_object_or_404(Composition, pk=kwargs['pk'])
         composition.field_set.split(', ')
@@ -157,16 +195,18 @@ class CompositionEditView(View):
         return render(request, 'staff_only/compose.html', context)
 
 
-class CompositionDeleteView(DeleteView):
+class CompositionDeleteView(PermissionRequiredMixin, DeleteView):
     """Allows delete composition."""
+    permission_requred = 'c_can_modify_composition'
     model = Composition
     success_url = reverse_lazy('staff_only:compositions')
 
 
 
 
-class AscriptionAddView(View):
+class AscriptionAddView(PermissionRequiredMixin, View):
     """Enables ascription of existing Composition to a client."""
+    permission_required = 'c_can_toggle_ascription'
     def get(self, request, *args, **kwargs):
         context = {
             'form': AscriptionForm(),
@@ -180,9 +220,11 @@ class AscriptionAddView(View):
         return render(request, 'staff_only/ascription_form.html')
 
 
-class ClientAscriptionView(View):
-    """User's detail page with list of all existing compositions, allows
-    strp or add ascription to an exercise to given client."""
+class ClientAscriptionView(UserPassesTestMixin, View):
+    """User's detail page with list of all existing compositions"""
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs['pk'])
         ascriptions = Ascription.objects.filter(user=user, active=True)
@@ -198,6 +240,15 @@ class ClientAscriptionView(View):
     def post(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs['pk'])
         composition = get_object_or_404(Composition, pk=request.POST.get('composition'))
+        return redirect(reverse('staff_only:toggle_ascription', kwargs={'user_pk': user.pk, 'comp_pk': composition.pk}))
+
+
+class ToggleAscriptionView(PermissionRequiredMixin, View):
+    """Enables switching on and off client's ascription to an exercise"""
+    permission_required = 'c_can_toggle_ascritpion'
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=kwargs['user_pk'])
+        composition = get_object_or_404(Composition, pk=kwargs['comp_pk'])
         try:
             ascription = Ascription.objects.get(composition=composition, user=user)
             if ascription.active == False:
@@ -207,20 +258,12 @@ class ClientAscriptionView(View):
             ascription.save()
         except Ascription.DoesNotExist:
             ascription = Ascription.objects.create(composition=composition, user=user)
-        compositions = Composition.objects.all()
-        ascriptions = Ascription.objects.filter(user=user, active=True)
-        ascr = [x.composition.pk for x in ascriptions]
-        context = {
-            'user': user,
-            'ascr': ascr,
-            'compositions': compositions
-        }
-        return render(request, 'staff_only/client_ascription.html', context)
+        return redirect(reverse('staff_only:client_ascriptions', kwargs={'pk': user.pk}))
 
 
-
-class ManageAscriptionsView(View):
+class ManageAscriptionsView(PermissionRequiredMixin, View):
     """Allows add or strip ascription of a particular composition to all of clients"""
+    permission_required = 'c_can_toggle_ascription'
     def get(self, request, *args, **kwargs):
         composition = get_object_or_404(Composition, pk=kwargs['pk'])
         ascriptions = Ascription.objects.filter(composition=composition, active=True)

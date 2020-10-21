@@ -6,12 +6,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, View
 
-from .forms import (DTForm, DurationForm, ExerciseForm, FlavorForm,
+from .forms import (DurationForm, ExerciseForm, FlavorForm,
     ItineraryForm, PlaceForm, RepetitionForm)
 from .models import Exercise
 from staff_only.models import Ascription, Composition
 from teams.models import User
-from teams.custom_mixins import SameUserOnlyMixin, FullProfileOrStaffMixin
+from teams.custom_mixins import SameUserOnlyMixin, FullProfileOrStaffMixin, SameUserOrStaffMixin
 from training.utils import check_location, check_current
 
 class HomeView(LoginRequiredMixin, FullProfileOrStaffMixin,
@@ -20,22 +20,16 @@ UserPassesTestMixin, View):
     def test_func(self):
         """Prevents users who are not staf members form seeing somebody's else
         records."""
-        # return (self.request.user.pk == self.kwargs['pk']) or (self.request.user.is_staff)
-        return self.request.user.pk == self.kwargs['pk']
+        return (self.request.user.pk == self.kwargs['pk']) or (self.request.user.is_staff)
 
     def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=kwargs['pk'])
         context = {
-            'ascription_list': Ascription.objects.filter(user=request.user)
+            'user': user,
+            'ascription_list': Ascription.objects.filter(user=user.pk)
         }
         return render(request, 'training/home.html', context)
 
-    def post(self, request, *args, **kwargs):
-        form = DTForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            print(cd)
-        print(form.errors)
-        return render(request, 'training/home.html')
 
 class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
@@ -67,7 +61,7 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
         if form.is_valid():
             weather = check_current(request.user)
             if weather == None:
-                print('Weather is none')## alert message
+                print('Weather is none')## TODO alert message
             data.update(form.cleaned_data)
             place_form = PlaceForm(request.POST)
             duration_form = DurationForm(request.POST)
@@ -90,13 +84,16 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
         return render(request, 'training/exercise_add.html', {'from': form})
 
 
-class AscriptionDetailView(DetailView):
+class AscriptionDetailView(UserPassesTestMixin, DetailView):
     """Displays detail of exercises connected with a composition ascribed to
     the user."""
+    def test_func(self):
+        same_user = self.kwargs['pk'] in (x.pk for x in self.request.user.ascription_set.all())
+        return same_user or request.user.is_staff
     model = Ascription
     template_name = 'training/exercises_list.html'
 
-class LocationView(View):
+class LocationView(SameUserOnlyMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
         check_location(user)
