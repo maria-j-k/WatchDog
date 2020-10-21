@@ -1,0 +1,40 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} New staff member{% endblock %}
+
+{% block body_block %}
+<div class="container">
+     <h1>Choose a user and accord staff privileges</h1>
+
+     <p>Every staff member can view all pages, so they can:</p>
+<ul>
+    <li>View all clients lists</li>
+    <li>View detail pages of each clients and their exercises</li>
+    <li>View list of invited person</li>
+    <li>View list of staff members</li>
+    <li>View list of existing exercises</li>
+    <li>View list of exercie's ascriptions</li>
+</ul>
+
+<p>If you want you may accord to a new staff member extra privileges. Choose a user and check the appropriate box below:</p>
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <form action="" method="POST">
+        
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" value="Send">
+    </form>
+
+
+</div>
+
+
+
+{% endblock %}
+

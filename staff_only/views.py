@@ -1,18 +1,43 @@
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
         View)
 
-from .forms import AscribeCompositionForm, AscriptionForm, ComposeForm, FieldForm
+from .forms import (AscribeCompositionForm, AscriptionForm, ComposeForm,
+FieldForm, MakeStaffForm)
 from .models import Ascription, Composition
 from teams.models import User
 
 
-class ClientListAll(ListView):
-    """Displays list of all clients with some basic information attached."""
+class StaffListView(ListView):
+    """Displays all staff members who has not admin status."""
     model = User
-    template_name ='staff_only/user_list.html'
-    queryset = User.objects.filter(is_staff=False)
+    template_name = 'staff_only/staff_list.html'
+    queryset = User.objects.filter(is_staff=True, is_superuser=False)
+
+
+class MakeStaff(View):
+    """Allows to change the status of a user and accord staff privileges."""
+    def get(self, request, *args, **kwargs):
+        form = MakeStaffForm()
+        return render(request, 'staff_only/make_staff_form.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = MakeStaffForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            print(cd)
+            return redirect(reverse('staff_only:list_staff'))
+        return render(request, 'staff_only/make_staff_form.html', {'form': form})
+
+
+#class ClientListAll(ListView):
+#    """Displays list of all clients with some basic information attached."""
+#    model = User
+#    template_name ='staff_only/user_list.html'
+#    queryset = User.objects.filter(is_staff=False)
+
 
 class ClientListTraining(ListView):
     """Displays list of clients who has already exercises ascribed."""
@@ -47,11 +72,6 @@ class SuspendedClients(ListView):
     queryset = User.objects.filter(is_active=False)
 
 
-class StaffListView(ListView):
-    """Displays all staff members who has not admin status."""
-    model = User
-    template_name = 'staff_only/staff_list.html'
-    queryset = User.objects.filter(is_staff=True, is_superuser=False)
 
 
 class ClientDetailView(DetailView):
@@ -59,7 +79,9 @@ class ClientDetailView(DetailView):
     model = User
     template_name ='staff_only/user_detail.html'
 
-class ToggleActive(View): # TODO to previous page
+
+class ToggleActive(PermissionRequiredMixin, View):
+    permission_required = 'c_can_toggle'
     def get(self, request, *args, **kwargs):
         next_url = request.GET.get('next')
         print(next_url)
@@ -159,7 +181,8 @@ class AscriptionAddView(View):
 
 
 class ClientAscriptionView(View):
-    """Displays all existing compositions, allows strip or add ascription to an exercise to given client."""
+    """User's detail page with list of all existing compositions, allows
+    strp or add ascription to an exercise to given client."""
     def get(self, request, *args, **kwargs):
         user = get_object_or_404(User, pk=kwargs['pk'])
         ascriptions = Ascription.objects.filter(user=user, active=True)

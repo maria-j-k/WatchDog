@@ -5,9 +5,16 @@ from . import views
 app_name = 'staff_only'
 urlpatterns = [
     path(
-        'clients/',
-        views.ClientListAll.as_view(),
-        name='clients'),
+        'staff/',
+        views.StaffListView.as_view(),
+        name='list_staff'),
+    path('staff_add',
+         views.MakeStaff.as_view(),
+         name='make_staff'),
+#    path(
+#        'clients/',
+#        views.ClientListAll.as_view(),
+#        name='clients'),
     path(
         'training_clients/',
          views.ClientListTraining.as_view(),
@@ -24,10 +31,6 @@ urlpatterns = [
         'suspended_clients/',
          views.SuspendedClients.as_view(),
          name='suspended_clients'),
-    path(
-        'staff/',
-        views.StaffListView.as_view(),
-        name='list_staff'),
     path(
         'client/<int:pk>/',
         views.ClientDetailView.as_view(),

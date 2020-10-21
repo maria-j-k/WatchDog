@@ -9,7 +9,7 @@
 <div class="container">
     <br></br>
     {% if user_list %}
-    <h5>Suspended clients:</h5> 
+    <h5>Staff members:</h5> 
     <br></br>
 <table class="table">
     <thead>
@@ -17,6 +17,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Manage permissions </th>
+            <th>Not staff</th>
             <th>Delete</th>
         </tr>
     </thead>
@@ -27,6 +28,7 @@
             
             <td>{{ user.email }}</td>
             <td><button type="button" class="btn btn-secondary"><a style="color:white" href="">x</a></button></td>
+            <td><button type="button" class="btn btn-warning"><a style="color:white" href="">x</a></button></td>
             <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
             </tr>
         {% endfor %}

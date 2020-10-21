@@ -72,7 +72,7 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
             place_form = PlaceForm(request.POST)
             duration_form = DurationForm(request.POST)
             repetitions_form = RepetitionForm(request.POST)
-            itinerary_form = ItineraryForm(request.POST) 
+            itinerary_form = ItineraryForm(request.POST)
             flavor_form = FlavorForm(request.POST)
 
             if place_form.is_valid():
