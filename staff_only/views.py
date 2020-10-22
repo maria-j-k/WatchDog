@@ -5,7 +5,7 @@ from django.views.generic import (DeleteView, DetailView, ListView, UpdateView,
         View)
 
 from .forms import (AscribeCompositionForm, AscriptionForm, ComposeForm,
-FieldForm, MakeStaffForm)
+FieldForm, MakeStaffForm, PermissionsForm)
 from .models import Ascription, Composition
 from teams.models import Invited, User
 
@@ -31,10 +31,55 @@ class MakeStaff(UserPassesTestMixin, View):
     def post(self, request, *args, **kwargs):
         form = MakeStaffForm(request.POST)
         if form.is_valid():
-            cd = form.cleaned_data
-            print(cd)
+            user = form.cleaned_data['user']
+            permissions = form.cleaned_data['permission']
+            permissions = [x.pk for x in permissions]
+            user.is_staff = True
+            user.user_permissions.set(permissions)
+            user.save()
             return redirect(reverse('staff_only:list_staff'))
         return render(request, 'staff_only/make_staff_form.html', {'form': form})
+
+
+class EditStaffMember(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=kwargs['pk'])
+        perm = user.user_permissions.all()
+        form = PermissionsForm() ## TODO initial values
+        context = {
+            'user': user,
+            'form': form
+        }
+        return render(request, 'staff_only/update_staff.html', context)
+
+    def post(self, request, *args, **kwargs):
+        form = PermissionsForm(request.POST)
+        if form.is_valid():
+            permissions = form.cleaned_data['name']
+            permissions = [x.pk for x in permissions]
+            user = get_object_or_404(User, pk=kwargs['pk'])
+            user.user_permissions.set(permissions)
+            user.save()
+            return redirect(reverse('staff_only:list_staff'))
+        context = {
+            'user': get_object_or_404(User, pk=kwargs['pk']),
+            'form': PermissionsForm(request.POST)
+        }
+        return render(request, 'staff_only/update_staff.html', context)
+
+class StripStaffStatus(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=kwargs['pk'])
+        user.is_staff = False
+        user.user_permissions.clear()
+        user.save()
+        return redirect(reverse('staff_only:list_staff'))
 
 
 #class ClientListAll(ListView):
@@ -84,9 +129,17 @@ class ListInvited(UserPassesTestMixin, ListView):
     def test_func(self):
         return self.request.user.is_staff
 
-    model = Invited 
+    model = Invited
     template_name = 'staff_only/invited.html'
     queryset = Invited.objects.all()
+
+
+class DeleteInvited(UserPassesTestMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.is_superuser
+    model = Invited
+    success_url = reverse_lazy('staff_only:invited_people')
+    template_name = 'staff_only/invited_confirm_delete.html'
 
 
 class SuspendedClients(UserPassesTestMixin, ListView):
@@ -97,8 +150,6 @@ class SuspendedClients(UserPassesTestMixin, ListView):
     model = User
     template_name = 'staff_only/suspended_clients.html'
     queryset = User.objects.filter(is_active=False)
-
-
 
 
 class ClientDetailView(UserPassesTestMixin, DetailView):
@@ -114,7 +165,6 @@ class ToggleActive(PermissionRequiredMixin, View):
     permission_required = 'c_can_toggle'
     def get(self, request, *args, **kwargs):
         next_url = request.GET.get('next')
-        print(next_url)
         user = User.objects.get(pk=kwargs['pk'])
         user.toggle_active()
         return redirect(next_url)
@@ -238,27 +288,25 @@ class ClientAscriptionView(UserPassesTestMixin, View):
         return render(request, 'staff_only/client_ascription.html', context)
 
     def post(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=kwargs['pk'])
         composition = get_object_or_404(Composition, pk=request.POST.get('composition'))
-        return redirect(reverse('staff_only:toggle_ascription', kwargs={'user_pk': user.pk, 'comp_pk': composition.pk}))
+        return redirect(reverse('staff_only:toggle_ascription', kwargs={**kwargs, 'comp_pk': composition.pk}))
 
 
 class ToggleAscriptionView(PermissionRequiredMixin, View):
     """Enables switching on and off client's ascription to an exercise"""
     permission_required = 'c_can_toggle_ascritpion'
     def get(self, request, *args, **kwargs):
-        user = get_object_or_404(User, pk=kwargs['user_pk'])
         composition = get_object_or_404(Composition, pk=kwargs['comp_pk'])
         try:
-            ascription = Ascription.objects.get(composition=composition, user=user)
+            ascription = Ascription.objects.get(composition=composition, user_id=kwargs['pk'])
             if ascription.active == False:
                 ascription.active = True
             else:
                 ascription.active = False
             ascription.save()
         except Ascription.DoesNotExist:
-            ascription = Ascription.objects.create(composition=composition, user=user)
-        return redirect(reverse('staff_only:client_ascriptions', kwargs={'pk': user.pk}))
+            ascription = Ascription.objects.create(composition=composition, user_id=kwargs['pk'])
+        return redirect(reverse('staff_only:client_ascriptions', kwargs={'pk': kwargs['pk']}))
 
 
 class ManageAscriptionsView(PermissionRequiredMixin, View):

@@ -5,7 +5,7 @@ from .models import Ascription, Composition
 from teams.models import User
 
 
-class MakeStaffForm(forms.Form):
+class MakeStaffForm(forms.Form): ## TODO label_from_instance
     user = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=False, is_active=True))
     permission= forms.ModelMultipleChoiceField(
         label='Permissions',
@@ -14,13 +14,24 @@ class MakeStaffForm(forms.Form):
     )
 
 
+class PermissionsForm(forms.ModelForm):
+    class Meta:
+        model = Permission
+        fields = ('name',)
+
+    name = forms.ModelMultipleChoiceField(
+        queryset=Permission.objects.filter(codename__startswith='c_'),
+        widget=forms.CheckboxSelectMultiple,
+        label='Permissions'
+    )
+
 
 class AscriptionForm(forms.Form):
     user = forms.ModelChoiceField(queryset=User.objects.filter(is_staff=False, is_active=True))
     composition = forms.ModelMultipleChoiceField(
         label='Exercise',
         queryset=Composition.objects.all(),
-        widget=forms.CheckboxSelectMultiple
+        widget=forms.CheckboxSelectMultiple,
     )
 
 

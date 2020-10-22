@@ -17,4 +17,5 @@ urlpatterns = [
 
 #    path('team_detail/<int:pk>/', views.TeamView.as_view(), name='team_detail'),
     path('team_edit/<int:pk>/', views.EditProfileView.as_view(), name='team_edit'),
+    path('user_delete/<int:pk>/', views.DeleteUser.as_view(), name='delete_user'),
 ]

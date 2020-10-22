@@ -29,7 +29,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
           <a class="dropdown-item" href="{% url 'staff_only:training_clients'%}">Training clients</a>
           <a class="dropdown-item" href="{% url 'staff_only:need_ascription' %}">Clients without exercises</a>
-          <a class="dropdown-item" href="{% url 'staff_only:registered_users' %}">Invited persons</a>
+          <a class="dropdown-item" href="{% url 'staff_only:registered_users' %}">Registered without profile</a>
           <a class="dropdown-item" href="{% url 'staff_only:suspended_clients' %}">Suspended clients</a>
         </div>
       </li>
@@ -46,8 +46,20 @@
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Invitations</a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'staff_only:invited_people'%}">See invited</a>
+          <a class="dropdown-item" href="{% url 'staff_only:invited_people' %}">See invited</a>
           <a class="dropdown-item" href="{% url 'teams:invite' %}">Invite new</a>
+        </div>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Staff</a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'staff_only:list_staff' %}">Staff members</a>
+          {% if request.user.is_superuser %}
+          <a class="dropdown-item" href="{% url 'staff_only:make_staff' %}">New staff member</a>
+          <a class="dropdown-item" href="{% url 'staff_only:make_staff' %}">Remove from staff</a>
+          <a class="dropdown-item" href="{% url 'staff_only:make_staff' %}">Manage permissions</a>
+          {% endif %}
         </div>
       </li>
     </ul>
@@ -83,9 +95,6 @@
       <li class="nav-item">
       <li class="nav-item">
         <a class="nav-link" href="{% url 'admin:index' %}"> Admin </a>  
-      </li>
-        <a class="nav-link" href="{% url 'staff_only:list_staff' %}">Staff</a>  
-      </li>
     </ul>
    {% elif request.user.is_authenticated %}
     <ul class="navbar-nav ml-auto">

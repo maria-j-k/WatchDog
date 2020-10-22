@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import (DetailView, TemplateView, UpdateView)
+from django.views.generic import (DeleteView, DetailView, TemplateView, UpdateView)
 
 from .custom_mixins import FullProfileOrStaffMixin, SameUserOnlyMixin
 from .forms import (AddressForm, DogForm, LoginForm, UserCreateForm, UserForm, InviteForm)
@@ -176,7 +176,6 @@ class ProfileInfoView(LoginRequiredMixin, View):
 
 class EditProfileView(UserPassesTestMixin, UpdateView):
     def test_func(self):
-        print(self.kwargs)
         return self.request.user.pk == int(self.kwargs['pk'])
     model = User
     form_class = UserForm
@@ -211,3 +210,23 @@ class EditProfileView(UserPassesTestMixin, UpdateView):
             'form': self.get_form(self.get_form_class()),
             'dog_form': dog_form
         })
+
+
+class DeleteUser(UserPassesTestMixin, DeleteView):
+    def test_func(self):
+        return self.request.user.pk == int(self.kwargs['pk']) or self.request.user.is_superuser
+    model = User
+#    success_url = reverse_lazy('staff_only:training_clients')
+    template_name = 'teams/user_confirm_delete.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DeleteUser, self).get_context_data(**kwargs)
+        context['next_url'] = self.request.GET.get('next')
+        return context
+
+    def get_success_url(self):
+        next_url = self.request.GET.get('next')
+        print(f'next url: {next_url}')
+        if next_url:
+            return next_url
+        return reverse_lazy('staff_only:training_clients')

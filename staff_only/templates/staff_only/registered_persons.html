@@ -1,6 +1,6 @@
 {% extends 'teams/base.html' %}
 
-{% block tittle_block %} Clients {% endblock %}
+{% block tittle_block %} Registered Persons {% endblock %}
 
 
 {% block body_block %}
@@ -21,7 +21,7 @@
             <tr>
             <td><a href="">{{ user.username }}</a></td>
             
-            <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
+            <td><button type="button" class="btn btn-danger"><a style="color:white" href="{% url 'teams:delete_user' user.pk %}?next={{ request.path }}">x</a></button></td>
             </tr>
         {% endfor %}
     </tbody>

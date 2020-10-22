@@ -1,0 +1,26 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Confirm delete {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+     <h1>Do you really want to delete {{ invited.email }}?</h1>
+    <br></br>
+     <form method="POST">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Delete">
+        <button type="button" class="btn btn-success"> <a style="color:white" href="{% url 'staff_only:invited_people' %}">Cancel</a>
+</button>
+        
+    </form>
+
+
+</div>
+
+
+
+{% endblock %}
+

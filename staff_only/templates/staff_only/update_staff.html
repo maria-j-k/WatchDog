@@ -1,10 +1,10 @@
 {% extends 'teams/base.html' %}
 
-{% block tittle_block %} New staff member {% endblock %}
+{% block tittle_block %} Update Staff member{% endblock %}
 
 {% block body_block %}
 <div class="container">
-     <h1>Choose a user and accord staff privileges</h1>
+    <h1>Update {{ user.first_name }}'s staff privileges</h1>
 
      <p>Every staff member can view all pages, so they can:</p>
 <ul>
@@ -23,7 +23,18 @@
 
 But deleting a composition means deleting (not deactivating) ALL exercises connected with this composition and all records of accomplished exercises as well.
 
-Be cautioneus while granting permissions.</p>
+Be cautious while granting permissions.</p>
+<h3>{{ user.first_name }} {{ user.last_name }} ({{ user.username}})</h3>
+{% if user.user_permissions.all %}
+<h3>has already following permissions:</h3>
+<ul>
+{% for perm in user.user_permissions.all %}
+<li>{{ perm.name }}</li>
+{% endfor %}
+
+</ul>
+<h3>Check the permissions you want {{user.first_name}} to have:</h3>
+{% endif %}    
     {% if messages %}
         <ul class="messages">
             {% for message in messages %}

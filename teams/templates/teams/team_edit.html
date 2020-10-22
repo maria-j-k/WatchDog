@@ -22,7 +22,7 @@
         {% csrf_token %}
         <input type="submit" class="btn btn-primary" value="Confirm">
         <button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'teams:password_change' %}">Change your password</a></button>
-        
+        <button type="button" class="btn btn-danger"><a style="color:white" href="{% url 'teams:delete_user' user.pk %}?next={{ request.path }}">Delete account</a></button>
     </form>
 </div>
 

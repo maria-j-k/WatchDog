@@ -1,0 +1,31 @@
+{% extends 'teams/base.html' %}
+
+{% block tittle_block %} Confirm delete {% endblock %}
+
+
+{% block body_block %}
+
+
+<div class="container">
+    {% if request.user.is_superuser %}
+     <h1>Do you really want to delete {{ user.username }}?</h1>
+     <h3>If you delete user's account, you'll loose all associated data.</h3>
+     {% else %}
+     <h1>{{user.username}}, do you really want to delete your account?</h1>
+     <h3>All your data would be lost.</h3>
+    {% endif %}
+    <br></br>
+     <form method="POST">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="Delete">
+        <button type="button" class="btn btn-success"> <a style="color:white" href="{{ next_url }}">Cancel</a>
+</button>
+        
+    </form>
+
+
+</div>
+
+
+
+{% endblock %}

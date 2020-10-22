@@ -22,7 +22,7 @@
             <tr>
             <td><a href="">{{ invited.email }}</a></td>
             
-            <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
+            <td><button type="button" class="btn btn-danger"><a style="color:white" href="{% url 'staff_only:delete_invited' invited.pk %}">x</a></button></td>
             </tr>
         {% endfor %}
     </tbody>

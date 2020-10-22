@@ -34,7 +34,7 @@
             <td>{{ user.dog.dogs_bread }}</td>
             <td>{{ user.last_login.date }}</td>
             <td><button type="button" class="btn btn-secondary"><a style="color:white" href="{% url 'staff_only:client_ascriptions' user.pk %}">x</a></button></td>
-            <td><button type="button" class="btn btn-danger"><a style="color:white" href="">x</a></button></td>
+            <td><button type="button" class="btn btn-danger"><a style="color:white" href="{% url 'teams:delete_user' user.pk %}?next={{ request.path }}">x</a></button></td>
             </tr>
         {% endfor %}
     </tbody>
