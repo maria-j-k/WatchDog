@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django_countries.fields import CountryField
 
 from .utils import compute_age
@@ -25,7 +26,7 @@ class Invited(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=254, unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
-
+    expires = models.DateTimeField(default=timezone.now() + timedelta(minutes=2), editable=False)
 #    def get_absolute_url(self):
 #        return reverse('teams:log_invited', kwargs={'pk': self.pk})
 
