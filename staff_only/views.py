@@ -155,8 +155,7 @@ class SuspendedClients(UserPassesTestMixin, ListView):
 class ClientDetailView(UserPassesTestMixin, DetailView):
     """Displays detailed information about a client."""
     def test_func(self):
-        return self.request.user.is_staff
-
+        return self.request.user.pk == int(self.kwargs['pk']) or self.request.user.is_staff
     model = User
     template_name ='staff_only/user_detail.html'
 

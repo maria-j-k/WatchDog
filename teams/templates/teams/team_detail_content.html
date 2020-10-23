@@ -1,8 +1,10 @@
 <h1>{{ user.first_name }} {{ user.last_name }} and {{ user.dog.dogs_name }}</h1>
 {% if user.profile_pic %}
-    {{ user.profile_pic }}
+<img src="{{ user.profile_pic.url }}" width="190" height="190" alt="user's profile picture"/>
 {% endif %}
-    {{ user.dog.dogs_pic }}
+{% if user.dog.dogs_pic %}
+<img src="{{ user.dog.dogs_pic.url }}"  width="190" height="190" alt="dog's picture"/>
+{% endif %}
     <ul>
     <li>Owner's first name: {{ user.first_name }}  </li>
     <li>Owner's last name: {{ user.last_name }}  </li>

@@ -41,10 +41,10 @@ class User(AbstractUser):
         lat: latitude took from openweahter api while saving profile detail
         lon : longitude took form openweather api while saving profile detail
         location: nearest city took form openweather api whiel saving profile detail"""
-    # def user_directory_path(instance, filename):
-    #     return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
+    def user_directory_path(instance, filename):
+        return 'profile_pic/user_{0}/{1}'.format(instance.id, filename)
 
-    # profile_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
+    profile_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
     _has_full_profile = models.BooleanField(default=False)
     zip_code = models.CharField(max_length=10)
     country = CountryField()
@@ -54,7 +54,7 @@ class User(AbstractUser):
     location = models.CharField(max_length=255, null=True)
 
     def get_absolute_url(self):
-        return reverse('teams:team_detail', args=[str(self.id)])
+        return reverse('staff_only:client_detail', args=[str(self.id)])
 
     @property
     def has_full_profile(self):
@@ -87,12 +87,12 @@ class Dog(models.Model):
         dogs_birthday: allows calculation of dogs age at given moment
         dogs_bread: bread of dog
         team_description: anything user would like to add, especially problems with dog's behavior, the problem they want to work on, etc."""
-#    def user_directory_path(instance, filename):
-#        return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
+    def user_directory_path(instance, filename):
+        return 'profile_pic/user_{0}/{1}'.format(instance.user.id, filename)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     dogs_name = models.CharField(max_length=32)
-    # dogs_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
+    dogs_pic = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
     dogs_birthday = models.DateField(validators=[keep_limits])
     dogs_bread = models.CharField(max_length=64)
     team_description = models.TextField()

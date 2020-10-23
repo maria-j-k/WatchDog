@@ -26,7 +26,7 @@ class UserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email','country', 'zip_code')
+        fields = ('first_name', 'last_name', 'email','country', 'zip_code', 'profile_pic')
 
 #class CoordinatesForm(forms.ModelForm):
 #    class Meta:
@@ -46,7 +46,7 @@ class DogForm(forms.ModelForm):
 
     class Meta:
         model = Dog
-        fields = ('dogs_name', 'dogs_birthday',
+        fields = ('dogs_name', 'dogs_birthday', 'dogs_pic',
             'dogs_bread', 'team_description')
 
 

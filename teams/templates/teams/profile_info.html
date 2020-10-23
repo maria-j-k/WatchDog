@@ -17,7 +17,7 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <form action="" method="POST">
+    <form action="" method="POST"enctype="multipart/form-data" >
         {{ user_form.as_p }}
         {{ dog_form.as_p }}
         {% csrf_token %}

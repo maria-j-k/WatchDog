@@ -108,7 +108,7 @@ class CheckInvited(View):
         return render(request, 'teams/invite.html', {'form': form})
 
 
-class SingInView(SameUserOnlyMixin, View):
+class SingInView(View):
     """Enables registration to the site for the users whos invitation has been verified."""
     def get(self, request, *args, **kwargs):
         form = UserCreateForm()
@@ -145,19 +145,25 @@ class ProfileInfoView(LoginRequiredMixin, View):
         return render(request, 'teams/profile_info.html', context)
 
     def post(self, request, *args, **kwargs):
-        user_form = UserForm(request.POST)
+        user_form = UserForm(request.POST, request.FILES)
         dog_form = DogForm(request.POST)
+        print(request.FILES)
         if not user_form.is_valid():
             return redirect(reverse('teams:profile_info',
                                     kwargs={'pk': request.user.pk}))
+
         if dog_form.is_valid():
             user = request.user
             user.first_name = user_form.cleaned_data['first_name']
             user.last_name = user_form.cleaned_data['last_name']
             user.email = user_form.cleaned_data['email']
             user.country = user_form.cleaned_data['country']
+            if 'profile_pic' in request.FILES:
+                user.profile_pic = request.FILES['profile_pic']
             user.zip_code = user_form.cleaned_data['zip_code']
             dog_data = dog_form.cleaned_data
+            if 'profile_pic' in request.FILES:
+                dog_data['dogs_pic'] = request.FILES['dogs_pic']
             dog = Dog.objects.create(user=user, **dog_data)
             check_location(user)
             user.save()
@@ -202,11 +208,14 @@ class EditProfileView(UserPassesTestMixin, UpdateView):
         dog_form = self.second_form_class(self.request.POST, prefix='dog')
         if dog_form.is_valid():
             user = self.get_object()
-            new_dog = self.second_model.objects.filter(user=user)
+            new_dog = self.second_model.objects.get(user=user)
             self.second_model.objects.filter(
                 user=user).update(
                 **dog_form.cleaned_data)
+            if 'dog-dogs_pic' in request.FILES:
+                new_dog.dogs_pic = request.FILES['dog-dogs_pic']
             check_location(user)
+            new_dog.save()
             user.save()
             return response
         return render(request, self.template_name, {
