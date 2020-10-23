@@ -197,11 +197,11 @@ class CompositionAdd(PermissionRequiredMixin, View):
         }
 
         if field_form.is_valid() and compose_form.is_valid():
-            field_set = field_form.cleaned_data['field_set']
+            extra_fields = field_form.cleaned_data['extra_fields']
             name = compose_form.cleaned_data['name']
             instruction = compose_form.cleaned_data['instruction']
-            field_set = ', '.join(field_set)
-            composition = Composition.objects.create(name=name, instruction=instruction, field_set=field_set)
+            extra_fields = ', '.join(extra_fields)
+            composition = Composition.objects.create(name=name, instruction=instruction, extra_fields=extra_fields)
             return redirect(reverse('staff_only:compositions'))
         return render(request, 'staff_only/compose.html', context)
 
@@ -219,9 +219,9 @@ class CompositionEditView(PermissionRequiredMixin, View):
     permission_required = 'c_can_modify_composition'
     def get(self, request, *args, **kwargs):
         composition = get_object_or_404(Composition, pk=kwargs['pk'])
-        composition.field_set.split(', ')
+        composition.extra_fields.split(', ')
         context = {
-            'field_form': FieldForm(initial={'field_set': composition.field_set.split(', ')}),
+            'field_form': FieldForm(initial={'extra_fields': composition.extra_fields.split(', ')}),
             'compose_form': ComposeForm(instance=composition)
         }
         return render(request, 'staff_only/compose.html', context)
@@ -238,7 +238,7 @@ class CompositionEditView(PermissionRequiredMixin, View):
         if field_form.is_valid() and compose_form.is_valid():
             composition.name = compose_form.cleaned_data['name']
             composition.instruction = compose_form.cleaned_data['instruction']
-            composition.field_set = ', '.join(field_form.cleaned_data['field_set'])
+            composition.extra_fields = ', '.join(field_form.cleaned_data['extra_fields'])
             composition.save()
             return redirect(reverse('staff_only:compositions'))
         return render(request, 'staff_only/compose.html', context)

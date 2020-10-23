@@ -37,20 +37,20 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request, *args, **kwargs):
         ascription = get_object_or_404(Ascription, pk=kwargs['pk'])
-        field_set = ascription.composition.field_set.split(', ')
+        extra_fields = ascription.composition.extra_fields.split(', ')
         context = {
             'ascription': ascription,
             'form': ExerciseForm(),
         }
-        if 'duration' in field_set:
+        if 'duration' in extra_fields:
             context['duration_form'] = DurationForm()
-        if 'place' in field_set:
+        if 'place' in  extra_fields:
             context['place_form'] = PlaceForm()
-        if 'repetitions' in field_set:
+        if 'repetitions' in  extra_fields:
             context['repetitions_form'] = RepetitionForm()
-        if 'itinerary' in field_set:
+        if 'itinerary' in extra_fields:
             context['itinerary_form'] = ItineraryForm()
-        if 'flavor' in field_set:
+        if 'flavor' in extra_fields:
             context['flavor_form'] = FlavorForm()
         return render(request, 'training/exercise_add.html', context)
 
@@ -82,7 +82,7 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
             exercise = Exercise.objects.create(owner=request.user, ascription=ascription, weather=weather, **data)
             return redirect(reverse('training:profile', kwargs={'pk': ascription.user_id}))
         print(form.errors)
-        return render(request, 'training/exercise_add.html', {'from': form})
+        return render(request, 'training/exercise_add.html', {'from': form}) ### TODO dlaczego nie wyświetla mi formularza, jeśli były błędy?
 
 
 class AscriptionDetailView(UserPassesTestMixin, DetailView):

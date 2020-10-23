@@ -21,7 +21,7 @@
         <tr>
             <td><a href= "{% url 'staff_only:composition_detail' item.pk %}" >{{ item.name }}</a></td>
             <td>{{ item.instruction }}</td>
-            <td>{{ item.field_set }}</td>
+            <td>{{ item.extra_fields }}</td>
             <td>{% for u in item.ascription_set.all %} 
                 {% if u.active  %}
             <a href="{% url 'staff_only:client_ascriptions' u.user.pk %}">{{ u.user }} </a>

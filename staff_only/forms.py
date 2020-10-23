@@ -61,5 +61,5 @@ FIELD_CHOICES =(
 
 
 class FieldForm(forms.Form):
-    field_set = forms.MultipleChoiceField(choices = FIELD_CHOICES, label='Additional parameters', widget=forms.CheckboxSelectMultiple())
+    extra_fields = forms.MultipleChoiceField(choices = FIELD_CHOICES, label='Additional parameters', widget=forms.CheckboxSelectMultiple())
 

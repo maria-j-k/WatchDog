@@ -14,24 +14,24 @@
     <thead>
         <tr>
             <th>Date and time</th>
-            {% if 'place' in ascription.composition.field_set %}
+            {% if 'place' in ascription.composition.extra_fields %}
                 <th>Place</th>
             {% endif %}
-            {% if 'place description' in ascription.composition.field_set %}
+            {% if 'place description' in ascription.composition.extra_fields %}
                 <th>Place description</th>
             {% endif %}
-            {% if 'duration' in ascription.composition.field_set %}
+            {% if 'duration' in ascription.composition.extra_fields %}
                 <th>Duration</th>
             {% endif %}
-            {% if 'repetitions' in ascription.composition.field_set %}
+            {% if 'repetitions' in ascription.composition.extra_fields %}
                 <th>Number of repetitions</th>
             {% endif %}
-            {% if 'flavor' in ascription.composition.field_set %}
+            {% if 'flavor' in ascription.composition.extra_fields %}
                 <th>Flavor</th>
             {% endif %}
             <th>Rating</th>
             <th>Remarques</th>
-            {% if 'comment' in ascription.composition.field_set %}
+            {% if 'comment' in ascription.composition.extra_fields %}
                 <th>Trainer's comment</th>
             {% endif %}
         </tr>
@@ -40,24 +40,24 @@
         {% for exr in ascription.exercise_set.all %}
             <tr>
                 <td>{{ exr.when }}</td>
-                {% if 'place' in ascription.composition.field_set %}
+                {% if 'place' in ascription.composition.extra_fields %}
                 <td>{{ exr.place }}</td>
             {% endif %}
-            {% if 'place description' in ascription.composition.field_set %}
+            {% if 'place description' in ascription.composition.extra_fields %}
                 <td>{{ exr.place_description }}</td>
             {% endif %}
-            {% if 'duration' in ascription.composition.field_set %}
+            {% if 'duration' in ascription.composition.extra_fields %}
                 <td>{{ exr.duration }}</td>
             {% endif %}
-            {% if 'repetitions' in ascription.composition.field_set %}
+            {% if 'repetitions' in ascription.composition.extra_fields %}
                 <td>{{ exr.repetitions }}</td>
             {% endif %}
-            {% if 'flavor' in ascription.composition.field_set %}
+            {% if 'flavor' in ascription.composition.extra_fields %}
                 <td>{{ exr.flavor }}</td>
             {% endif %}
                 <td>{{ exr.get_rating_display }}</td>
                 <td>{{ exr.remarques }}</td>
-            {% if 'comment' in ascription.composition.field_set %}
+            {% if 'comment' in ascription.composition.extra_fields %}
                 <td>{{  exr.comment|default:""  }}</td>
 
             {% endif %}

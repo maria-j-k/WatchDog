@@ -13,7 +13,7 @@ class Composition(models.Model):
         field_set: string containing names of non-mandatory fields of Exercise model which would be included in the form displayed to user while creating new exercise. """
     name = models.CharField(max_length=32)
     instruction = models.TextField()
-    field_set = models.CharField(max_length=255)
+    extra_fields = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
