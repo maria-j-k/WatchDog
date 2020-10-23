@@ -86,7 +86,7 @@ class SendInvitation(PermissionRequiredMixin, View):
                 messages.info(request,'This person has already been invited.')
                 return render(request, 'teams/invite.html', {'form': form})
             send_invitation(request, invited)
-            return redirect(reverse('staff_only:training_clients'))
+            return redirect(reverse('staff_only:invited_people'))
         return render(request, 'teams/invite.html', {'form': form})
 
 class CheckInvited(View):
@@ -104,7 +104,7 @@ class CheckInvited(View):
             else:
                 messages.warning(
                     request, 'Your email doesn\'t match the token. Please contact the site administrator.')
-                return redirect(reverse('teams:home'))
+                return redirect(reverse('teams:invite'))
         return render(request, 'teams/invite.html', {'form': form})
 
 
@@ -158,14 +158,13 @@ class ProfileInfoView(LoginRequiredMixin, View):
             user.last_name = user_form.cleaned_data['last_name']
             user.email = user_form.cleaned_data['email']
             user.country = user_form.cleaned_data['country']
-            if 'profile_pic' in request.FILES:
-                user.profile_pic = request.FILES['profile_pic']
+            user.profile_pic = request.FILES.get('profile_pic') or None
             user.zip_code = user_form.cleaned_data['zip_code']
             dog_data = dog_form.cleaned_data
-            if 'profile_pic' in request.FILES:
-                dog_data['dogs_pic'] = request.FILES['dogs_pic']
             dog = Dog.objects.create(user=user, **dog_data)
+            dog.dogs_pic = request.FILES.get('dogs_pic') or None
             check_location(user)
+            dog.save()
             user.save()
             return redirect(
                 reverse('training:profile', kwargs={'pk': user.pk}))
@@ -212,8 +211,7 @@ class EditProfileView(UserPassesTestMixin, UpdateView):
             self.second_model.objects.filter(
                 user=user).update(
                 **dog_form.cleaned_data)
-            if 'dog-dogs_pic' in request.FILES:
-                new_dog.dogs_pic = request.FILES['dog-dogs_pic']
+            new_dog.dogs_pic = request.FILES.get('dog-dogs_pic') or None
             check_location(user)
             new_dog.save()
             user.save()

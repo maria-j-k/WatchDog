@@ -7,7 +7,7 @@ from teams.models import User
 
 class Composition(models.Model):
     """Stores information about exercise type.
-    
+
         name: string, name given to composition
         instruction: multiline string, describing the rules for exercise
         field_set: string containing names of non-mandatory fields of Exercise model which would be included in the form displayed to user while creating new exercise. """
