@@ -41,3 +41,4 @@ def send_invitation(request, invited):
         [invited.email],
         fail_silently=False,
         )
+

@@ -68,6 +68,7 @@ class PasswordResetComplete(PasswordResetCompleteView):
 
 
 class SendInvitation(PermissionRequiredMixin, View):
+    """View responsible of inviting new users. Checks if the given email already registerd in the database, or the person has been already invited but didn\'t register yet. If one of this is a case, displays info message. Otherwise, creates invited object and sends invitation email.."""
     permission_required = 'c_can_invite'
     def get(self, request, *args, **kwargs):
         form = InviteForm()
@@ -89,6 +90,7 @@ class SendInvitation(PermissionRequiredMixin, View):
         return render(request, 'teams/invite.html', {'form': form})
 
 class CheckInvited(View):
+    """Verifies if the person wanting to register has been invited. Checks if the email provided by user and uuid transfered by get parameters match the email belonging to given invited object in db."""
     def get(self, request, *args, **kwargs):
         form = InviteForm()
         return render(request, 'teams/invite.html', {'form': form})
@@ -107,6 +109,7 @@ class CheckInvited(View):
 
 
 class SingInView(SameUserOnlyMixin, View):
+    """Enables registration to the site for the users whos invitation has been verified."""
     def get(self, request, *args, **kwargs):
         form = UserCreateForm()
         return render(request, 'teams/sign_in.html', {'form': form})

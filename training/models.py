@@ -1,4 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from staff_only.models import Ascription
 from teams.models import User
@@ -16,6 +18,12 @@ class Weather(models.Model):
     wind = models.IntegerField()
 #   sunrise = models.DateTimeField()
 #   sunset = models.DateTimeField()
+
+
+def no_future_exercises(date):
+    now = timezone.now()
+    if date > now:
+        raise ValidationError('You\'ve entered future date of your exercise')
 
 
 class Exercise(models.Model):
@@ -47,7 +55,7 @@ class Exercise(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     ascription = models.ForeignKey(Ascription, on_delete=models.CASCADE)
     date = models.DateField(null=True)
-    when= models.DateTimeField()
+    when= models.DateTimeField(validators=[no_future_exercises])
     time = models.CharField(max_length=32, null=True)
     rating = models.IntegerField(choices=RATING_CHOICES, default=NEUTRAL)
     remarques = models.TextField('Additional remarques')

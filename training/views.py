@@ -81,6 +81,7 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
                 data.update(flavor_form.cleaned_data)
             exercise = Exercise.objects.create(owner=request.user, ascription=ascription, weather=weather, **data)
             return redirect(reverse('training:profile', kwargs={'pk': ascription.user_id}))
+        print(form.errors)
         return render(request, 'training/exercise_add.html', {'from': form})
 
 

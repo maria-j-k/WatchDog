@@ -9,12 +9,17 @@ def test_password():
 
 
 @pytest.fixture
+def create_email(name):
+    return f'{name}@test.pl'
+
+
+@pytest.fixture
 def create_user(db, test_password):
     def make_user(**kwargs):
         data = {
             'username': 'John',
             'password': test_password,
-            'email': 'john@brown.pl',
+            'email': create_email,
             'zip_code': '00-444',
             'country': 'pl',
             'lat': 52,

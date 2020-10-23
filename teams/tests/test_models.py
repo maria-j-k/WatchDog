@@ -8,9 +8,8 @@ from django.urls import reverse
 from teams.models import Dog, User
 
 credits = {'username': 'john', 'password': 'smith'}
-test_open_data = [('home', 200), ('teams:sign_in', 200), ('teams:logout', 302)]
+test_open_data = [('home', 200), ('teams:logout', 302)]
 test_auth_data = [('home', credits, 200), ('teams:sign_in', credits, 200), ('teams:logout', credits, 302)]
-
 
 
 @pytest.mark.django_db
@@ -20,7 +19,6 @@ def test_open_views(client, url, expected):
     response = client.get(reverse(url))
     assert response.status_code == expected
 
-
 @pytest.mark.django_db
 def test_login_view(client):
     url = reverse('teams:login')
@@ -29,13 +27,11 @@ def test_login_view(client):
     assert response.status_code == 200
     assert response_post.status_code == 200
 
-
 @pytest.mark.django_db
 def test_protected_view(client, create_user):
     user = create_user(username='fantastic')
-#    client.login(user=user.username, password='test_password')
     client.force_login(user)
-    url = reverse('teams:team_detail', kwargs={'pk': user.pk})
+    url = reverse('training:profile', kwargs={'pk': user.pk})
     response = client.get(url)
     assert response.status_code == 200
 
@@ -44,15 +40,20 @@ def test_protected_view_fail(client, create_user):
     f_user = create_user()
     c_user = create_user(username='sogreat')
     client.force_login(c_user)
-    url = reverse('teams:team_detail', kwargs={'pk': f_user.pk})
+    url = reverse('training:profile', kwargs={'pk': f_user.pk})
     response = client.get(url)
-    assert response.status_code == 404
+    assert response.status_code == 403
 
 @pytest.mark.django_db
-def test_protected_view_staff(client, create_staff_user):
+def test_protected_view_staff_may_access(client, create_staff_user):
     s_user = create_staff_user
     client.force_login(s_user)
-    url = reverse('teams:team_detail', kwargs={'pk': s_user.pk})
+    url = reverse('training:profile', kwargs={'pk': s_user.pk})
     response = client.get(url)
     assert response.status_code == 200
 
+#@pytest.mark.django_db
+#def test_send_invitation_view(client, create_staff_user):
+#    s_user = create_staff_user
+#    s_user.user_permissions.add('')
+#    pass

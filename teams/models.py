@@ -26,7 +26,7 @@ class Invited(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(max_length=254, unique=True)
     date_created = models.DateTimeField(auto_now_add=True)
-    expires = models.DateTimeField(default=timezone.now() + timedelta(minutes=2), editable=False)
+    expires = models.DateTimeField(default=timezone.now() + timedelta(days=7), editable=False)
 #    def get_absolute_url(self):
 #        return reverse('teams:log_invited', kwargs={'pk': self.pk})
 
