@@ -51,4 +51,4 @@ class DogForm(forms.ModelForm):
 
 
 class InviteForm(forms.Form):
-    email = forms.CharField(max_length=254)
+    email = forms.EmailField(max_length=254)

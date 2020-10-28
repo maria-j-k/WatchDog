@@ -68,7 +68,7 @@ class PasswordResetComplete(PasswordResetCompleteView):
 
 
 class SendInvitation(PermissionRequiredMixin, View):
-    """View responsible of inviting new users. Checks if the given email already registerd in the database, or the person has been already invited but didn\'t register yet. If one of this is a case, displays info message. Otherwise, creates invited object and sends invitation email.."""
+    """View responsible of inviting new users. Checks if the given email already registerd in the database, or the person has been already invited but didn\'t register yet. If one of this is the case, displays info message. Otherwise, creates invited object and sends invitation email.."""
     permission_required = 'c_can_invite'
     def get(self, request, *args, **kwargs):
         form = InviteForm()

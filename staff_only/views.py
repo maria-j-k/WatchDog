@@ -124,6 +124,16 @@ class RegisteredPersons(UserPassesTestMixin, ListView):
     queryset = User.objects.filter(_has_full_profile=False, is_staff=False)
 
 
+class SuspendedClients(UserPassesTestMixin, ListView):
+    """Displays all clients who has been suspended but not deleted"""
+    def test_func(self):
+        return self.request.user.is_staff
+
+    model = User
+    template_name = 'staff_only/suspended_clients.html'
+    queryset = User.objects.filter(is_active=False)
+
+
 class ListInvited(UserPassesTestMixin, ListView):
     """Displays all invited people who had not register yet."""
     def test_func(self):
@@ -140,16 +150,6 @@ class DeleteInvited(UserPassesTestMixin, DeleteView):
     model = Invited
     success_url = reverse_lazy('staff_only:invited_people')
     template_name = 'staff_only/invited_confirm_delete.html'
-
-
-class SuspendedClients(UserPassesTestMixin, ListView):
-    """Displays all clients who has been suspended but not deleted"""
-    def test_func(self):
-        return self.request.user.is_staff
-
-    model = User
-    template_name = 'staff_only/suspended_clients.html'
-    queryset = User.objects.filter(is_active=False)
 
 
 class ClientDetailView(UserPassesTestMixin, DetailView):
@@ -249,8 +249,6 @@ class CompositionDeleteView(PermissionRequiredMixin, DeleteView):
     permission_requred = 'c_can_modify_composition'
     model = Composition
     success_url = reverse_lazy('staff_only:compositions')
-
-
 
 
 class AscriptionAddView(PermissionRequiredMixin, View):
