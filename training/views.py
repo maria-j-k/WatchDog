@@ -58,7 +58,9 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
         ascription = Ascription.objects.get(pk=kwargs['pk'])
         form = ExerciseForm(request.POST)
         data = {}
+        context = {'ascription': ascription,}
         if form.is_valid():
+            context['form'] = ExerciseForm(request.POST)
             weather = check_current(request.user)
             if weather == None:
                 print('Weather is none')## TODO alert message
@@ -81,8 +83,14 @@ class ExerciseAddView(LoginRequiredMixin, UserPassesTestMixin, View):
                 data.update(flavor_form.cleaned_data)
             exercise = Exercise.objects.create(owner=request.user, ascription=ascription, weather=weather, **data)
             return redirect(reverse('training:profile', kwargs={'pk': ascription.user_id}))
-        print(form.errors)
-        return render(request, 'training/exercise_add.html', {'from': form}) ### TODO dlaczego nie wyświetla mi formularza, jeśli były błędy?
+        print(context)
+        form = ExerciseForm(request.POST)
+        context['place_form'] = PlaceForm(request.POST)
+        context['duration_form'] = DurationForm(request.POST)
+        context['repetitions_form'] = RepetitionForm(request.POST)
+        context['itinerary_form'] = ItineraryForm(request.POST)
+        context['flavor_form'] = FlavorForm(request.POST)
+        return render(request, 'training/exercise_add.html', context) ### TODO dlaczego nie wyświetla mi formularza, jeśli były błędy?
 
 
 class AscriptionDetailView(UserPassesTestMixin, DetailView):

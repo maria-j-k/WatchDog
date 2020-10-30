@@ -27,7 +27,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in ascr.exercise_set.all %}
+            {% for item in ascr.exercise_set.all|slice:":2" %}
                 <tr>
                     <td>{{ item.when }}</td>
                     <td>{{ item.get_rating_display }}</td>

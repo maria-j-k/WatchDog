@@ -71,7 +71,7 @@ class Exercise(models.Model):
     weather = models.OneToOneField(Weather, on_delete=models.CASCADE, null=True)
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['-when']
 
     def __str__(self):
         return self.ascription.composition.name
